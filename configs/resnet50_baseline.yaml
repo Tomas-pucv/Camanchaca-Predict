@@ -1,0 +1,26 @@
+# Baseline: ResNet-50 · regresión sobre log10(visibilidad)
+model:
+  name: resnet50_baseline
+  arch: resnet50
+  pretrained: true
+
+data:
+  img_size: 224
+  batch_size: 64
+  num_workers: 2
+  target: log10_v          # regresión sobre log10 de la visibilidad [m]
+
+train:
+  epochs: 8
+  lr: 1.0e-4
+  weight_decay: 1.0e-4
+  scheduler: cosine
+  early_stopping_patience: 3
+  amp: true
+
+paths:
+  labels_csv: data/processed/labels.csv
+  splits_dir: data/splits
+  checkpoint_out: models/resnet50_best.pt
+
+seed: 42

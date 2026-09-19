@@ -1,0 +1,32 @@
+# Protagonista: ViT-B/16 · cabeza dual (regresión log10 V + 4 bandas)
+model:
+  name: vit_b16_dual
+  arch: vit_base_patch16_224.augreg_in21k_ft_in1k
+  pretrained: true
+  n_bands: 4
+  dual_head: true
+
+data:
+  img_size: 224
+  batch_size: 32            # bajar a 16 (grad_accum: 2) si hay OOM en T4
+  grad_accum: 1
+  num_workers: 2
+  target: log10_v
+
+train:
+  phase_a_epochs: 2         # solo cabezas, tronco congelado
+  phase_a_lr: 1.0e-3
+  phase_b_epochs: 6         # fine-tuning completo
+  phase_b_trunk_lr: 1.0e-5
+  phase_b_head_lr: 1.0e-4
+  lam_reg: 0.6              # peso de MSE frente a CE en la pérdida conjunta
+  weight_decay: 0.05
+  early_stopping_patience: 3
+  amp: true
+
+paths:
+  labels_csv: data/processed/labels.csv
+  splits_dir: data/splits
+  checkpoint_out: models/vitb16_best.pt
+
+seed: 42

@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Datos pesados (NO subir imágenes: licencia solo-investigación de RESIDE/O-HAZE).
+# Los CSV de splits y labels SÍ se versionan cuando sean pequeños.
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Checkpoints de modelos
+models/*
+!models/.gitkeep
+
+# Credenciales
+kaggle.json
+*.kaggle
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
