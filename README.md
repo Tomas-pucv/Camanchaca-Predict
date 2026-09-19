@@ -7,10 +7,13 @@
 **Curso:** Proyecto Aplicado 2026-2 (PUCV) · **Grupo:** 5
 
 
-!\[Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python\&logoColor=white)
-!\[PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch\&logoColor=white)
-!\[Colab](https://img.shields.io/badge/Ejecutar%20en-Google%20Colab-F9AB00?logo=googlecolab\&logoColor=white)
-!\[Licencia](https://img.shields.io/badge/Licencia-MIT-yellow)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python\&logoColor=white)
+
+![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch\&logoColor=white)
+
+![Colab](https://img.shields.io/badge/Ejecutar%20en-Google%20Colab-F9AB00?logo=googlecolab\&logoColor=white)
+
+![Licencia](https://img.shields.io/badge/Licencia-MIT-yellow)
 
 \---
 
