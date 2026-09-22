@@ -126,16 +126,8 @@ camanchaca-predict/
 
 Los notebooks son autónomos (Colab-first); `src/` + `scripts/` permiten además ejecución local/CLI (`make verify`, `make splits`, `make test`).
 
-## 8. Resultados
 
-_(se completa al terminar los entrenamientos — notebooks 04–06 escriben aquí `reports/tables/` y `reports/figures/`)_
-
-| Modelo | MAE (m) | RMSE (m) | MAPE | R² | F1 macro | Falso-seguro | Latencia (ms) |
-|---|---|---|---|---|---|---|---|
-| ResNet-50 | — | — | — | — | — | — | — |
-| ViT-B/16 | — | — | — | — | — | — | — |
-
-## 9. Roadmap y estado
+## 8. Roadmap y estado
 
 | Hito | Fecha | Estado |
 |---|---|---|
@@ -148,7 +140,7 @@ _(se completa al terminar los entrenamientos — notebooks 04–06 escriben aqu�
 | **Entrega evaluada (5 %, 15 min)** | **28-09 / 01-10** | ⏳ |
 | Post-curso: datos reales de camanchaca (cámaras propias / DTV), fine-tuning local | oct+ | 🔭 |
 
-## 10. Riesgos y mitigación (resumen)
+## 9. Riesgos y mitigación (resumen)
 
 | ID | Riesgo | Mitigación |
 |---|---|---|
@@ -160,36 +152,15 @@ _(se completa al terminar los entrenamientos — notebooks 04–06 escriben aqu�
 
 Tabla completa con probabilidad, impacto, señal de alarma y responsable en [docs/risks_and_mitigation.md](docs/risks_and_mitigation.md).
 
-## 11. Equipo y roles
+## 10. Equipo y roles
 
 | Integrante | Rol | Responsabilidad principal |
 |---|---|---|
-| _[nombre]_ | A — Datos | Notebooks 01–03, etiquetado, data card, Kaggle |
-| _[nombre]_ | B — Entrenamiento | Notebook 04, infraestructura Colab, checkpoints |
-| _[nombre]_ | C — ViT y evaluación | Notebooks 05–06, comparación, presentación |
+| Tomás Ignacio Moraga| A — Datos | Notebooks 01–03, etiquetado, data card, Kaggle |
+| Nelson Mauricio Fuentes | B — Entrenamiento | Notebook 04, infraestructura Colab, checkpoints |
 
 Revisión cruzada obligatoria de PRs entre roles.
 
-## 12. Publicación en GitHub
-
-```bash
-# dentro de la carpeta del proyecto
-git init
-git branch -M main
-git add .
-git commit -m "feat: esqueleto inicial + notebooks Colab + criterio de etiquetado"
-git remote add origin https://github.com/Tomas-pucv/Camanchaca-Predict.git
-
-# SOLO si el repo ya tiene archivos (p. ej. un README creado en la web):
-git pull origin main --allow-unrelated-histories --no-edit
-
-git push -u origin main
-```
-
-Convenciones: ramas `feature/datos`, `feature/baseline`, `feature/vit`; commits con prefijos `feat:` / `fix:` / `docs:` / `data:`; `main` protegida y solo se fusiona vía pull request revisado.
-
-⚠️ **No subir imágenes de los datasets** (licencia solo-investigación de RESIDE/O-HAZE): el `.gitignore` excluye `data/raw` y `data/processed`; se versionan solo splits (CSV), código, figuras y tablas.
-
-## 13. Licencia
+## 11. Licencia
 
 [MIT](LICENSE) — Grupo 5, Proyecto Aplicado 2026-2.
