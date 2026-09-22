@@ -5,7 +5,6 @@
 > **ViT-B/16 (modelo protagonista)** comparado contra **ResNet-50 (baseline)**.
 
 **Curso:** Proyecto Aplicado 2026-2 (PUCV) · **Grupo:** 5
-**Hitos:** presentación de avance **lun 21-09-2026** · entrega evaluada (5 %, 15 min) **28-09 / 01-10-2026**
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)
