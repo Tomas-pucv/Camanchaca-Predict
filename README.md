@@ -137,7 +137,6 @@ Los notebooks son autónomos (Colab-first); `src/` + `scripts/` permiten además
 | Descarga RESIDE + etiquetado + EDA + splits | 22-09 | ⏳ |
 | ResNet-50 entrenado con métricas | 25-09 | ⏳ |
 | ViT-B/16 entrenado con métricas | 27-09 | ⏳ |
-| **Entrega evaluada (5 %, 15 min)** | **28-09 / 01-10** | ⏳ |
 | Post-curso: datos reales de camanchaca (cámaras propias / DTV), fine-tuning local | oct+ | 🔭 |
 
 ## 9. Riesgos y mitigación (resumen)
