@@ -1,0 +1,21 @@
+# Versiones EXACTAS con las que se verificó el código en el sandbox (CPU, Python 3.13.16).
+# Referencia de reproducibilidad: en Colab se usan torch/torchvision preinstalados
+# (no reinstalar) y cada corrida guarda sus versiones en runs/<exp>/<modelo>/seed<k>/config.yaml.
+# Instalación estricta fuera de Colab:  pip install -r requirements-lock.txt && pip install -e . --no-deps
+gradio==6.30.0
+gradio_client==2.7.2
+matplotlib==3.11.2
+nbclient==0.11.0
+nbformat==5.11.1
+numpy==2.5.4
+pandas==3.0.6
+pillow==12.3.0
+pytest==9.1.1
+PyYAML==6.0.3
+safetensors==0.8.0
+scikit-learn==1.9.1
+scipy==1.18.1
+timm==1.0.30
+torch==2.14.1
+torchvision==0.29.1
+tqdm==4.70.1

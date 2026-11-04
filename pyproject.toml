@@ -4,11 +4,47 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "camanchaca-predict"
-version = "0.1.0"
-description = "Estimación de visibilidad en metros bajo camanchaca (Camino La Pólvora, Valparaíso) — G5, Proyecto Aplicado 2026-2"
+version = "1.0.0.dev0"
+description = "Estimación de visibilidad (MOR, metros) bajo niebla para el Camino La Pólvora — ResNet-50 vs DeiT-S (G5, Aprendizaje Automático II, PUCV 2026-2)"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
+authors = [
+  { name = "Tomás Ignacio Moraga" },
+  { name = "Nelson Mauricio Fuentes" },
+]
+# torch/torchvision: en Colab se usan los preinstalados (no reinstalar: rompe CUDA).
+dependencies = [
+  "numpy>=1.24",
+  "pandas>=2.0",
+  "scipy>=1.10",
+  "scikit-learn>=1.3",
+  "matplotlib>=3.7",
+  "Pillow>=10.0",
+  "PyYAML>=6.0",
+  "tqdm>=4.65",
+  "torch>=2.4",
+  "torchvision>=0.19",
+  "timm>=1.0.15,<2",
+]
+
+[project.optional-dependencies]
+demo = ["gradio>=6.29,<7"]
+data = ["cityscapesscripts>=2.2", "kaggle>=1.6"]
+dev = ["pytest>=7.4", "nbformat>=5.9", "nbclient>=0.10", "ipykernel>=6.0", "gradio_client>=1.0"]
+
+[project.scripts]
+camanchaca = "camanchaca.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+  "slow: pruebas lentas (entrenamiento de humo en CPU)",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning",
+]

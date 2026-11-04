@@ -1,0 +1,6 @@
+# Unifica las identidades de git de un mismo autor (ver README, sección "Equipo").
+# Formato: Nombre Canónico <correo canónico> Nombre en el commit <correo en el commit>
+# Los commits del avance de Tomás aparecen con tres user.name distintos y el mismo correo.
+Tomás Ignacio Moraga <tomas.moraga.g@mail.pucv.cl> Paulita <tomas.moraga.g@mail.pucv.cl>
+Tomás Ignacio Moraga <tomas.moraga.g@mail.pucv.cl> Tomás <tomas.moraga.g@mail.pucv.cl>
+Tomás Ignacio Moraga <tomas.moraga.g@mail.pucv.cl> Tomas Ignacio Moraga <tomas.moraga.g@mail.pucv.cl>

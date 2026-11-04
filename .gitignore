@@ -7,24 +7,40 @@ build/
 dist/
 .venv/
 venv/
+.pytest_cache/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Datos pesados (NO subir imágenes: licencia solo-investigación de RESIDE/O-HAZE).
-# Los CSV de splits y labels SÍ se versionan cuando sean pequeños.
-data/raw/*
-!data/raw/.gitkeep
-data/processed/*
-!data/processed/.gitkeep
+# DATOS: nunca subir imágenes ni mapas derivados (licencias de RESIDE,
+# Cityscapes/Foggy Cityscapes, HazeRD y O-HAZE prohíben redistribuirlas).
+# Sí se versionan los CSV pequeños (rutas relativas + etiquetas):
+#   data/manifests/*.csv   data/splits/v1/*.csv   data/splits/v1/SPLIT_INFO.json
+data/raw/
+data/images/
+data/aux/
+data/processed/
+*.tar
+*.zip
+*.npy
+local_workspace/
 
-# Checkpoints de modelos
-models/*
-!models/.gitkeep
+# Corridas: checkpoints, historiales y predicciones (los resultados finales
+# versionables se copian a reports/ con `camanchaca evaluate/report`)
+/runs/
+/models/
+*.pt
+*.pth
+*.ckpt
 
 # Credenciales
 kaggle.json
 *.kaggle
+credentials.json
+
+# Gradio
+.gradio/
+flagged/
 
 # OS / IDE
 .DS_Store
