@@ -3,44 +3,51 @@
 Ley de Koschmieder
 ------------------
 Un objeto negro observado a distancia d contra el fondo del cielo tiene
-contraste aparente  C(d) = exp(-beta * d). La visibilidad meteorológica se
-define como la distancia a la que el contraste cae a un umbral epsilon:
+contraste aparente  C(d) = exp(-beta * d). La visibilidad se define como la
+distancia a la que el contraste cae a un umbral epsilon:
 
-    V = -ln(epsilon) / beta        (epsilon = 0.02  ->  V ~= 3.912 / beta)
+    V = -ln(epsilon) / beta
 
-Con epsilon = 0.02 (umbral conservador, orientado a seguridad vial) y beta
-en [1/m] se obtiene V en metros.
+Convención del proyecto (desde la entrega final)
+------------------------------------------------
+Se usa el **MOR** (Meteorological Optical Range, OMM No. 8): epsilon = 0.05,
+es decir V = 2.996 / beta. Es el estándar meteorológico/aeronáutico, coincide
+con la convención de Foggy Cityscapes (beta 0.005/0.01/0.02 -> 600/300/150 m)
+y es la opción conservadora: con epsilon = 0.02 (V = 3.912/beta, usado en el
+avance) la visibilidad sale ~30 % MAYOR, es decir, menos segura.
+
+El coeficiente beta [1/m] es el ancla común entre datasets; epsilon = 0.02 se
+reporta solo como análisis de sensibilidad (`EPS_LEGACY`).
 
 Modelo atmosférico de dispersión (ASM)
 --------------------------------------
-RESIDE sintetiza niebla con:
-
     I(x) = J(x) * t(x) + A * (1 - t(x)),   t(x) = exp(-beta * d(x))
 
-donde beta es el coeficiente de extinción que RESIDE registra en el nombre de
-archivo de cada imagen con niebla (patrón "sceneid_A_beta.jpg"). Ese beta es
-la única ancla física que permite derivar una etiqueta en METROS, algo que
-ningún dataset de niebla entrega directamente.
+Ver `camanchaca.labeling.fog_synthesis` para el renderizador.
 """
 from __future__ import annotations
 
 import numpy as np
 
-# Umbral de contraste (2%): conservador para seguridad vial.
-# Sensibilidad: con epsilon=0.05 (estándar MOR de aviación) V = 3.0/beta (~23% menor).
-DEFAULT_CONTRAST_THRESHOLD = 0.02
+# Umbrales de contraste
+EPS_MOR = 0.05      # convención principal (OMM, MOR): V = 2.996 / beta
+EPS_LEGACY = 0.02   # convención del avance (sensibilidad): V = 3.912 / beta
+DEFAULT_CONTRAST_THRESHOLD = EPS_MOR
 
-# Bandas de seguridad vial basadas en la distancia de detención (SSD).
-# SSD a 60 km/h ~ 77 m | 80 km/h ~ 119 m | 100 km/h ~ 168 m | 120 km/h ~ 225 m
-# (piso mojado, mu=0.4, tiempo de reacción 2.5 s).
+# Bandas de seguridad vial (m). Se mantienen las del avance; se justifican con
+# la distancia de detención (SSD, piso mojado, mu=0.4, reacción 2.5 s):
+# SSD(50 km/h) ~ 59 m | 60 ~ 77 m | 80 ~ 119 m | 100 ~ 168 m | 120 ~ 225 m.
 BAND_EDGES = (50.0, 100.0, 200.0)
 BAND_NAMES = ("critico", "alto_riesgo", "precaucion", "aceptable")
 BAND_LABELS_ES = (
-    "Critico (<50 m)",
-    "Alto riesgo (50-100 m)",
-    "Precaucion (100-200 m)",
-    "Aceptable (>=200 m)",
+    "Crítico (<50 m)",
+    "Alto riesgo (50–100 m)",
+    "Precaución (100–200 m)",
+    "Aceptable (≥200 m)",
 )
+N_BANDS = len(BAND_NAMES)
+# Umbral de "peligro" para la tasa de falso-seguro (V real < 100 m).
+DANGER_CUT_M = 100.0
 
 
 def visibility_from_beta(beta, threshold: float = DEFAULT_CONTRAST_THRESHOLD):
@@ -51,16 +58,32 @@ def visibility_from_beta(beta, threshold: float = DEFAULT_CONTRAST_THRESHOLD):
     return -np.log(threshold) / beta
 
 
-def band_from_visibility(v):
-    """Banda de seguridad vial a partir de la visibilidad [m]."""
+def beta_from_visibility(v, threshold: float = DEFAULT_CONTRAST_THRESHOLD):
+    """Coeficiente de extinción [1/m] a partir de la visibilidad [m]."""
     v = np.asarray(v, dtype=float)
-    names = np.array(BAND_NAMES)
-    return names[np.digitize(v, BAND_EDGES)]
+    if np.any(v <= 0):
+        raise ValueError("la visibilidad debe ser estrictamente positiva (m)")
+    return -np.log(threshold) / v
+
+
+def convert_visibility(v, from_threshold: float, to_threshold: float):
+    """Convierte una visibilidad entre convenciones de umbral (vía beta)."""
+    return visibility_from_beta(beta_from_visibility(v, from_threshold), to_threshold)
 
 
 def band_index(v):
-    """Índice entero de banda (0=critico, 1=alto_riesgo, 2=precaucion, 3=aceptable)."""
-    return np.digitize(np.asarray(v, dtype=float), BAND_EDGES)
+    """Índice de banda (0=critico .. 3=aceptable); -1 si V es NaN/inf/no positiva."""
+    v = np.asarray(v, dtype=float)
+    idx = np.digitize(v, BAND_EDGES)
+    bad = ~np.isfinite(v) | (v <= 0)
+    return np.where(bad, -1, idx).astype(int)
+
+
+def band_from_visibility(v):
+    """Nombre de banda a partir de la visibilidad [m] ('' si no hay etiqueta)."""
+    idx = np.asarray(band_index(v))
+    names = np.array(BAND_NAMES + ("",))
+    return names[np.where(idx < 0, N_BANDS, idx)]
 
 
 def stopping_sight_distance(v_kmh, t_reaction: float = 2.5,
@@ -71,3 +94,17 @@ def stopping_sight_distance(v_kmh, t_reaction: float = 2.5,
     """
     v = np.asarray(v_kmh, dtype=float) / 3.6
     return v * t_reaction + v ** 2 / (2 * mu * g)
+
+
+def safe_speed_kmh(visibility_m, t_reaction: float = 2.5,
+                   mu: float = 0.4, g: float = 9.81):
+    """Velocidad máxima [km/h] cuya distancia de detención cabe en V.
+
+    Resuelve SSD(v) = V (inversa de `stopping_sight_distance`). Es un valor
+    ILUSTRATIVO (supuestos fijos de reacción y fricción), no una recomendación
+    operativa.
+    """
+    vis = np.clip(np.asarray(visibility_m, dtype=float), 0.0, None)
+    a = 1.0 / (2 * mu * g)
+    v_ms = (-t_reaction + np.sqrt(t_reaction ** 2 + 4 * a * vis)) / (2 * a)
+    return v_ms * 3.6
