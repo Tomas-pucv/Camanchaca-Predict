@@ -1,0 +1,6 @@
+model:
+  name: deit_s
+  timm_name: deit_small_patch16_224.fb_in1k   # 21.7 M parámetros sin la capa de ImageNet (22.1 M con ella); solo ImageNet-1k
+  family: vit
+  pretrained: true
+  gradcam_layer: backbone.blocks.-1.norm1

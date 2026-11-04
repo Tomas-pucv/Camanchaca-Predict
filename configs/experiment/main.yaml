@@ -1,0 +1,14 @@
+# Experimento principal: ResNet-50 vs DeiT-S, protocolo idéntico, 3 semillas.
+name: main
+protocol: configs/protocol/base.yaml
+models:
+  - configs/model/resnet50.yaml
+  - configs/model/deit_s.yaml
+seeds: [0, 1, 2]
+sweep: configs/protocol/lr_sweep.yaml
+data:
+  splits_dir: data/splits/v1
+  train: train.csv
+  val: val.csv
+  test: test.csv
+  external: ext.csv

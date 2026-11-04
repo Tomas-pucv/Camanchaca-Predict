@@ -1,5 +1,6 @@
-"""Modelos: ResNet-50 (baseline) y ViT-B/16 (protagonista)."""
-from .resnet_regressor import ResNetVisibility
-from .vit_regressor import ViTVisibility
+"""Modelos: backbone timm (ResNet-50 / DeiT-S) + cabeza compartida."""
+from .factory import VisibilityModel, build_model, count_params, get_submodule_by_path
+from .heads import VisibilityHead, corn_class_probs, corn_loss, corn_predict
 
-__all__ = ["ResNetVisibility", "ViTVisibility"]
+__all__ = ["VisibilityModel", "build_model", "count_params", "get_submodule_by_path",
+           "VisibilityHead", "corn_class_probs", "corn_loss", "corn_predict"]
