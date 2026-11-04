@@ -1,0 +1,16 @@
+# CS-Fog: niebla PROPIA sobre Cityscapes limpio con distancia métrica estéreo
+# — `camanchaca prep cs-fog`. Cubre las 4 bandas en el mismo dominio (rompe la
+# confusión dataset <-> banda). Las banderas de la CLI tienen prioridad.
+# Los valores usados quedan en images/cs_fog/PARAMS.json: si cambias alguno tras
+# generar las imágenes, re-ejecuta con --overwrite (si no, `prep` aborta).
+splits: [train, val]   # splits OFICIALES de Cityscapes con gtFine (test no tiene labels)
+k_train: 2             # visibilidades por frame en ciudades de entrenamiento
+k_eval: 2              # visibilidades por frame en ciudades de val/test (configs/data/foggy_cityscapes.yaml)
+vmin: 15.0             # V MOR mínima [m]   (V ~ log-uniforme en [vmin, vmax])
+vmax: 1000.0           # V MOR máxima [m]
+a_min: 0.75            # luz atmosférica A ~ U[a_min, a_max]
+a_max: 0.95
+short_side: 288
+crop_bottom: 0.2       # mismo recorte del capó que Foggy Cityscapes
+seed: 42               # semilla global; cada frame usa sha256(semilla, stem)
+max_frames: null       # submuestreo de frames (null = todos)

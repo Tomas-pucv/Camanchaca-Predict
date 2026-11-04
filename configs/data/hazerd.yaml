@@ -1,0 +1,14 @@
+# HazeRD (Zhang, Ding y Sharma, ICIP 2017) — `camanchaca prep hazerd`. Solo test externo.
+# Si no vienen imágenes con niebla ya simuladas, se renderizan en Python con la
+# profundidad métrica (.mat): beta = -ln(eps)/V, t = exp(-beta d), I = J t + A (1 - t).
+# Las banderas de la CLI tienen prioridad sobre estos valores.
+# Los valores usados quedan en images/hazerd/PARAMS.json: si cambias alguno tras
+# generar las imágenes, re-ejecuta con --overwrite (si no, `prep` aborta).
+eps: 0.02              # umbral de contraste de HazeRD. A CONFIRMAR leyendo demo_simu_haze.m
+                       # (fuentes secundarias: 2 %). Etiqueta = V MOR = 2.996/beta ~ 0.766 V nominal
+levels: [50, 100, 200, 500, 1000]   # V nominales de HazeRD [m]
+airlight: 0.76         # A del script original
+invalid_depth_factor: 2.0   # profundidad <= 0 o no finita -> 2 V (regla del port hazy_simu); <= 0 -> inf
+linear_rgb: true       # componer en RGB lineal (sRGB -> lineal -> niebla -> sRGB). A CONFIRMAR
+depth_key: null        # clave del .mat (null = autodetección: única matriz 2-D)
+short_side: 288

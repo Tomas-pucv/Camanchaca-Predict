@@ -1,0 +1,19 @@
+# Foggy Cityscapes oficial (Sakaridis et al., IJCV 2018) — `camanchaca prep foggy-cityscapes`.
+# beta en {0.005, 0.01, 0.02} 1/m -> V MOR = 2.996/beta = 600 / 300 / 150 m.
+# Las banderas de la CLI tienen prioridad sobre estos valores.
+splits: [train, val, test]   # carpetas de leftImg8bit_foggy a procesar
+# Nota: las ciudades del split 'test' OFICIAL (berlin, bielefeld, bonn, leverkusen,
+# mainz, munich) no están en val_cities ni test_cities, así que `camanchaca split`
+# las asigna a TRAIN (beta conocido; nunca se mezclan con las ciudades de evaluación).
+betas: ["0.005", "0.01", "0.02"]
+short_side: 288
+crop_bottom: 0.2             # fracción inferior recortada (capó del vehículo propio)
+refined_list: null           # URL o archivo de la lista 'refined' (550 frames); no se versiona
+
+# Partición POR CIUDAD de Cityscapes (la usan `camanchaca split` y `prep cs-fog`).
+# test = ciudades del val oficial (500 frames).
+test_cities: [frankfurt, lindau, munster]
+# val = 3 ciudades FIJAS del train oficial, ~15 % de sus 2.975 frames
+# (hanover 196 + jena 119 + tubingen 144 = 459 frames ~ 15,4 %; conteos de memoria,
+# VERIFICAR con los datos descargados: SPLIT_INFO.json los reporta).
+val_cities: [hanover, jena, tubingen]
