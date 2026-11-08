@@ -385,13 +385,6 @@ Camanchaca-Predict/
 | **Tomás Ignacio Moraga** | datos y etiquetado, baselines, análisis de autos, demo, data card | problema, etiqueta, datos, autos, demo |
 | **Nelson Mauricio Fuentes** | entrenamiento, evaluación e incertidumbre, interpretabilidad, latencia | cambios, método, resultados, interpretabilidad, velocidad vs precisión |
 
-Los dos presentan unos 7 minutos cada uno y revisan el trabajo del otro.
-
-**Identidades de git.** Los primeros commits del repositorio son de Tomás
-(correo `tomas.moraga.g@mail.pucv.cl`) hechos desde equipos con distinto
-`user.name` ("Paulita", "Tomás" y "Tomas Ignacio Moraga"). El archivo
-[`.mailmap`](.mailmap) los unifica sin reescribir el historial
-(`git shortlog -sne` muestra una sola persona).
 
 ## Uso de asistentes de IA
 
