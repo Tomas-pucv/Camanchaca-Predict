@@ -1,0 +1,4 @@
+# O-HAZE (Ancuti et al., NTIRE 2018) — `camanchaca prep ohaze`. Solo test externo cualitativo:
+# 45 pares reales NN_outdoor_hazy / NN_outdoor_GT, sin visibilidad medida
+# (hazy: label_quality = ninguna; GT: is_clear = True; group = par).
+short_side: 288

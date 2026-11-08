@@ -1,0 +1,23 @@
+# Prueba de humo en CPU (CI y sandbox): datos sintéticos, pesos aleatorios, 2 pasos.
+name: smoke
+allow_cpu: true          # entrena en CPU sin --device cpu (en main.yaml sin GPU se rechaza)
+protocol: configs/protocol/base.yaml
+models:
+  - configs/model/resnet50.yaml
+  - configs/model/deit_s.yaml
+model_overrides:
+  pretrained: false
+seeds: [0, 1]
+sweep: configs/protocol/lr_sweep.yaml
+data:
+  splits_dir: data/splits/v1     # `camanchaca smoke` lo reemplaza por una carpeta temporal
+  train: train.csv
+  val: val.csv
+  test: test.csv
+  external: ext.csv
+protocol_overrides:
+  batch_size: 4
+  num_workers: 0
+  amp: false
+  schedule: {max_steps: 2, warmup_steps: 1, eval_every: 1, early_stop_patience: 2,
+             save_last_every: 1}

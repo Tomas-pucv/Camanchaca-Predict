@@ -1,0 +1,5 @@
+# Barrido de LR con el MISMO presupuesto para cada arquitectura (semilla 0, solo val).
+grid_lr_backbone: [3.0e-5, 1.0e-4, 3.0e-4]
+max_steps: 1200
+eval_every: 300
+seed: 0

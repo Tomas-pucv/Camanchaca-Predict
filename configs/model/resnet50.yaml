@@ -1,0 +1,6 @@
+model:
+  name: resnet50
+  timm_name: resnet50.a1_in1k      # 23.5 M parámetros sin la capa de ImageNet (25.6 M con ella); solo ImageNet-1k
+  family: cnn
+  pretrained: true
+  gradcam_layer: backbone.layer4.-1

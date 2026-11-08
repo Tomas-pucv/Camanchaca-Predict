@@ -1,7 +1,7 @@
-"""Camanchaca-Predict: estimación de visibilidad (m) bajo niebla camanchaca.
+"""Camanchaca-Predict: estimación de visibilidad (MOR, metros) bajo niebla.
 
-Paquete del proyecto G5 — Proyecto Aplicado 2026-2 (PUCV).
-Pipeline: imagen con niebla -> ResNet-50 (baseline) / ViT-B/16 (protagonista)
--> visibilidad estimada en metros + banda de seguridad vial.
+Proyecto G5 — Aprendizaje Automático II (PUCV), 2026-2.
+Pipeline: imagen con niebla -> ResNet-50 / DeiT-S (mismo protocolo y misma
+cabeza) -> visibilidad estimada (m) + banda de seguridad vial.
 """
-__version__ = "0.1.0"
+__version__ = "1.0.0.dev0"

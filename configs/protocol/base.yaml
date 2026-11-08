@@ -1,0 +1,33 @@
+# PROTOCOLO COMPARTIDO — idéntico para ResNet-50 y DeiT-S (comparación justa).
+# Lo único que cambia entre arquitecturas es configs/model/*.yaml y el LR
+# elegido por el barrido (misma grilla y mismo presupuesto para todos).
+input:
+  resize: 256            # imagen completa a 256x256 (misma política para todas las fuentes)
+  crop: 224              # train: RandomCrop 224 + flip; eval: CenterCrop 224
+  hflip: true            # SIN jitter de color/brillo/contraste: el contraste es la señal
+target:
+  name: log10_v          # log10 de la visibilidad MOR (eps=0.05), estandarizada con stats de train
+head:
+  dropout: 0.1           # misma cabeza para todos: Dropout -> Linear(1) + ordinal CORN (3 logits)
+  ordinal: true
+loss:
+  reg: smooth_l1         # sobre log10(V) estandarizado
+  smooth_l1_beta: 1.0
+  ordinal_weight: 0.5    # peso de la pérdida CORN sobre las 4 bandas (0 = desactivar)
+optim:
+  name: adamw
+  lr_backbone: 1.0e-4    # lo fija el barrido (configs/protocol/lr_sweep.yaml)
+  head_lr_mult: 10.0     # lr_head = head_lr_mult * lr_backbone
+  weight_decay: 0.05     # sin weight decay en normas y sesgos
+  betas: [0.9, 0.999]
+schedule:
+  max_steps: 3600        # PASOS FIJOS e iguales (~12 épocas con ~19k imágenes y batch 64)
+  warmup_steps: 300
+  eval_every: 300
+  early_stop_patience: 4 # evaluaciones sin mejora
+  save_last_every: 3     # evaluaciones entre escrituras de last.pt (~280 MB; menos churn en Drive)
+batch_size: 64
+num_workers: 2
+amp: true                # fp16 solo en CUDA (T4); en CPU se ignora
+grad_clip: 1.0
+selection_metric: val_log10_mae_macro_source   # media de log10-MAE por fuente en val

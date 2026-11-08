@@ -1,0 +1,8 @@
+# STRETCH (1 semilla): punto extra de la curva velocidad vs precisión. No forma
+# parte de la comparación principal (tamaño distinto: 86 M parámetros).
+model:
+  name: deit_b
+  timm_name: deit_base_patch16_224.fb_in1k
+  family: vit
+  pretrained: true
+  gradcam_layer: backbone.blocks.-1.norm1

@@ -1,12 +1,16 @@
 """Parsing del beta de RESIDE y proxies de densidad de niebla (validación).
 
-RESIDE nombra sus imágenes con niebla como "sceneid_A_beta.jpg", donde A es la
-luz atmosférica y beta el coeficiente de extinción usado al sintetizar. Ese
-patrón es la fuente de nuestras etiquetas en metros.
+RESIDE-OTS oficial nombra sus imágenes con niebla como "sceneid_A_beta.jpg",
+donde A es la luz atmosférica y beta el coeficiente de extinción usado al
+sintetizar. Como la profundidad de RESIDE es ESTIMADA (monocular, relativa),
+la etiqueta derivada de ese beta es una "visibilidad equivalente", no metros
+medidos. Los reempaques de Kaggle con nombres secuenciales (p. ej. RESIDE-6K)
+pierden beta y no sirven para etiquetar.
 
 El "proxy de densidad de niebla" (brillo medio del canal oscuro) no sirve para
 etiquetar en metros (requeriría profundidad de escena), pero sí para VALIDAR
-consistencia: a mayor beta, el canal oscuro debe ser más brillante.
+consistencia y como feature del baseline físico (sin deep learning) que
+expone el posible atajo de "contraste global".
 """
 from __future__ import annotations
 
@@ -29,13 +33,13 @@ def parse_reside_stem(stem: str):
 
 def dark_channel(img: np.ndarray, patch: int = 15) -> np.ndarray:
     """Canal oscuro (He et al., 2011): mínimo por canal + filtro de mínimo."""
-    import cv2  # importación diferida: solo se necesita para validación visual
+    from scipy.ndimage import minimum_filter  # sin dependencia de OpenCV
 
+    img = np.asarray(img)
     if img.dtype != np.uint8:
         img = (np.clip(img, 0, 1) * 255).astype(np.uint8) if img.max() <= 1.0 \
             else np.clip(img, 0, 255).astype(np.uint8)
-    kernel = np.ones((patch, patch), np.uint8)
-    return cv2.erode(img.min(axis=2), kernel)
+    return minimum_filter(img.min(axis=2), size=patch, mode="nearest")
 
 
 def haze_density_proxy(img: np.ndarray, patch: int = 15) -> float:

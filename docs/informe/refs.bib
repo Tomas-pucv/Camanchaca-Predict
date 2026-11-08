@@ -1,0 +1,245 @@
+% Bibliografía del informe final de Camanchaca-Predict (pandoc --citeproc).
+% Los campos marcados con "VERIFICAR" se escribieron de memoria o a partir de
+% fuentes secundarias; confirmarlos con la fuente original antes de entregar.
+
+% ---------------------------------------------------------------- Datasets
+@article{li2019benchmarking,
+  author  = {Li, Boyi and Ren, Wenqi and Fu, Dengpan and Tao, Dacheng and Feng, Dan and Zeng, Wenjun and Wang, Zhangyang},
+  title   = {Benchmarking Single-Image Dehazing and Beyond},
+  journal = {IEEE Transactions on Image Processing},
+  volume  = {28},
+  number  = {1},
+  pages   = {492--505},
+  year    = {2019},
+  doi     = {10.1109/TIP.2018.2867951},
+  note    = {RESIDE. arXiv:1712.04143. DOI: VERIFICAR}
+}
+
+@inproceedings{cordts2016cityscapes,
+  author    = {Cordts, Marius and Omran, Mohamed and Ramos, Sebastian and Rehfeld, Timo and Enzweiler, Markus and Benenson, Rodrigo and Franke, Uwe and Roth, Stefan and Schiele, Bernt},
+  title     = {The Cityscapes Dataset for Semantic Urban Scene Understanding},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {3213--3223},
+  year      = {2016}
+}
+
+@article{sakaridis2018semantic,
+  author  = {Sakaridis, Christos and Dai, Dengxin and Van Gool, Luc},
+  title   = {Semantic Foggy Scene Understanding with Synthetic Data},
+  journal = {International Journal of Computer Vision},
+  volume  = {126},
+  number  = {9},
+  pages   = {973--992},
+  year    = {2018},
+  doi     = {10.1007/s11263-018-1072-8},
+  note    = {Foggy Cityscapes. Número 9: VERIFICAR}
+}
+
+@inproceedings{zhang2017hazerd,
+  author    = {Zhang, Yanfu and Ding, Li and Sharma, Gaurav},
+  title     = {{HazeRD}: An Outdoor Scene Dataset and Benchmark for Single Image Dehazing},
+  booktitle = {IEEE International Conference on Image Processing (ICIP)},
+  pages     = {3205--3209},
+  year      = {2017},
+  doi       = {10.1109/ICIP.2017.8296874}
+}
+
+@misc{zhang2019hazerddata,
+  author       = {Zhang, Yanfu and Ding, Li and Sharma, Gaurav},
+  title        = {{HazeRD}: An Outdoor Scene Dataset and Benchmark for Single Image Dehazing},
+  howpublished = {IEEE DataPort},
+  year         = {2019},
+  doi          = {10.21227/h6q8-y165}
+}
+
+@inproceedings{ancuti2018ohaze,
+  author    = {Ancuti, Codruta O. and Ancuti, Cosmin and Timofte, Radu and De Vleeschouwer, Christophe},
+  title     = {{O-HAZE}: A Dehazing Benchmark with Real Hazy and Haze-Free Outdoor Images},
+  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition Workshops (CVPRW), NTIRE},
+  pages     = {754--762},
+  year      = {2018},
+  note      = {arXiv:1804.05101. Páginas: VERIFICAR}
+}
+
+@misc{mourning2025airview,
+  author        = {Mourning, Chad and Wang, Zhewei and Murray, Justin},
+  title         = {{AIR-VIEW}: The Aviation Image Repository for Visibility Estimation of Weather, A Dataset and Benchmark},
+  year          = {2025},
+  eprint        = {2506.20939},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV}
+}
+
+@inproceedings{lin2014coco,
+  author    = {Lin, Tsung-Yi and Maire, Michael and Belongie, Serge and Hays, James and Perona, Pietro and Ramanan, Deva and Doll{\'a}r, Piotr and Zitnick, C. Lawrence},
+  title     = {Microsoft {COCO}: Common Objects in Context},
+  booktitle = {European Conference on Computer Vision (ECCV)},
+  pages     = {740--755},
+  year      = {2014}
+}
+
+% ------------------------------------------------- Física de la visibilidad
+@article{koschmieder1924theorie,
+  author  = {Koschmieder, Harald},
+  title   = {Theorie der horizontalen Sichtweite},
+  journal = {Beitr{\"a}ge zur Physik der freien Atmosph{\"a}re},
+  volume  = {12},
+  pages   = {33--53, 171--181},
+  year    = {1924},
+  note    = {Volumen y páginas: VERIFICAR}
+}
+
+@book{middleton1952vision,
+  author    = {Middleton, W. E. Knowles},
+  title     = {Vision through the Atmosphere},
+  publisher = {University of Toronto Press},
+  address   = {Toronto},
+  year      = {1952}
+}
+
+@book{wmo2018guide,
+  author    = {{World Meteorological Organization}},
+  title     = {Guide to Instruments and Methods of Observation (WMO-No. 8), Volume I: Measurement of Meteorological Variables},
+  publisher = {WMO},
+  address   = {Geneva},
+  year      = {2018},
+  note      = {Capítulo de visibilidad: definición de MOR (umbral 5 \%). Edición: VERIFICAR}
+}
+
+@book{aashto2018policy,
+  author    = {{AASHTO}},
+  title     = {A Policy on Geometric Design of Highways and Streets},
+  edition   = {7},
+  publisher = {American Association of State Highway and Transportation Officials},
+  address   = {Washington, DC},
+  year      = {2018},
+  note      = {Tiempo de percepción-reacción de 2,5 s para la distancia de detención}
+}
+
+@article{he2011single,
+  author  = {He, Kaiming and Sun, Jian and Tang, Xiaoou},
+  title   = {Single Image Haze Removal Using Dark Channel Prior},
+  journal = {IEEE Transactions on Pattern Analysis and Machine Intelligence},
+  volume  = {33},
+  number  = {12},
+  pages   = {2341--2353},
+  year    = {2011},
+  doi     = {10.1109/TPAMI.2010.168}
+}
+
+% ------------------------------------------------------------ Arquitecturas
+@inproceedings{he2016deep,
+  author    = {He, Kaiming and Zhang, Xiangyu and Ren, Shaoqing and Sun, Jian},
+  title     = {Deep Residual Learning for Image Recognition},
+  booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+  pages     = {770--778},
+  year      = {2016}
+}
+
+@inproceedings{dosovitskiy2021image,
+  author    = {Dosovitskiy, Alexey and Beyer, Lucas and Kolesnikov, Alexander and Weissenborn, Dirk and Zhai, Xiaohua and Unterthiner, Thomas and Dehghani, Mostafa and Minderer, Matthias and Heigold, Georg and Gelly, Sylvain and Uszkoreit, Jakob and Houlsby, Neil},
+  title     = {An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2021}
+}
+
+@inproceedings{touvron2021training,
+  author    = {Touvron, Hugo and Cord, Matthieu and Douze, Matthijs and Massa, Francisco and Sablayrolles, Alexandre and J{\'e}gou, Herv{\'e}},
+  title     = {Training Data-Efficient Image Transformers \& Distillation through Attention},
+  booktitle = {International Conference on Machine Learning (ICML)},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {10347--10357},
+  year      = {2021}
+}
+
+@misc{wightman2021resnet,
+  author        = {Wightman, Ross and Touvron, Hugo and J{\'e}gou, Herv{\'e}},
+  title         = {{ResNet} Strikes Back: An Improved Training Procedure in timm},
+  year          = {2021},
+  eprint        = {2110.00476},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV}
+}
+
+@misc{wightman2019timm,
+  author       = {Wightman, Ross},
+  title        = {{PyTorch} Image Models (timm)},
+  year         = {2019},
+  howpublished = {\url{https://github.com/huggingface/pytorch-image-models}},
+  doi          = {10.5281/zenodo.4414861},
+  note         = {Versión usada: 1.0.x}
+}
+
+@article{shi2023corn,
+  author  = {Shi, Xintong and Cao, Wenzhi and Raschka, Sebastian},
+  title   = {Deep Neural Networks for Rank-Consistent Ordinal Regression Based on Conditional Probabilities},
+  journal = {Pattern Analysis and Applications},
+  volume  = {26},
+  pages   = {941--955},
+  year    = {2023},
+  note    = {CORN. arXiv:2111.08851. Volumen y páginas: VERIFICAR}
+}
+
+% ---------------------------------------------------------------- Detección
+@inproceedings{ren2015faster,
+  author    = {Ren, Shaoqing and He, Kaiming and Girshick, Ross and Sun, Jian},
+  title     = {Faster {R-CNN}: Towards Real-Time Object Detection with Region Proposal Networks},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {28},
+  year      = {2015}
+}
+
+@misc{li2021benchmarking,
+  author        = {Li, Yanghao and Xie, Saining and Chen, Xinlei and Doll{\'a}r, Piotr and He, Kaiming and Girshick, Ross},
+  title         = {Benchmarking Detection Transfer Learning with Vision Transformers},
+  year          = {2021},
+  eprint        = {2111.11429},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.CV},
+  note          = {Receta de entrenamiento de fasterrcnn\_resnet50\_fpn\_v2 de torchvision}
+}
+
+% ------------------------------------------------------- Interpretabilidad
+@inproceedings{selvaraju2017gradcam,
+  author    = {Selvaraju, Ramprasaath R. and Cogswell, Michael and Das, Abhishek and Vedantam, Ramakrishna and Parikh, Devi and Batra, Dhruv},
+  title     = {{Grad-CAM}: Visual Explanations from Deep Networks via Gradient-Based Localization},
+  booktitle = {IEEE International Conference on Computer Vision (ICCV)},
+  pages     = {618--626},
+  year      = {2017}
+}
+
+@inproceedings{abnar2020quantifying,
+  author    = {Abnar, Samira and Zuidema, Willem},
+  title     = {Quantifying Attention Flow in Transformers},
+  booktitle = {Annual Meeting of the Association for Computational Linguistics (ACL)},
+  pages     = {4190--4197},
+  year      = {2020}
+}
+
+% --------------------------------------------------- Estadística y documentación
+@book{efron1993introduction,
+  author    = {Efron, Bradley and Tibshirani, Robert J.},
+  title     = {An Introduction to the Bootstrap},
+  publisher = {Chapman \& Hall/CRC},
+  address   = {New York},
+  year      = {1993}
+}
+
+@article{gebru2021datasheets,
+  author  = {Gebru, Timnit and Morgenstern, Jamie and Vecchione, Briana and Vaughan, Jennifer Wortman and Wallach, Hanna and Daum{\'e} III, Hal and Crawford, Kate},
+  title   = {Datasheets for Datasets},
+  journal = {Communications of the ACM},
+  volume  = {64},
+  number  = {12},
+  pages   = {86--92},
+  year    = {2021}
+}
+
+@inproceedings{mitchell2019model,
+  author    = {Mitchell, Margaret and Wu, Simone and Zaldivar, Andrew and Barnes, Parker and Vasserman, Lucy and Hutchinson, Ben and Spitzer, Elena and Raji, Inioluwa Deborah and Gebru, Timnit},
+  title     = {Model Cards for Model Reporting},
+  booktitle = {Conference on Fairness, Accountability, and Transparency (FAT*)},
+  pages     = {220--229},
+  year      = {2019}
+}

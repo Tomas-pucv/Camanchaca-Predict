@@ -1,0 +1,13 @@
+# RESIDE-OTS (RESIDE-β Outdoor Training Set) — `camanchaca prep reside`.
+# Formato OFICIAL requerido: '{id}_{A}_{beta}.jpg' (7 beta x 5 A por escena).
+# La preparación ABORTA ante reempaques sin beta (RESIDE-6K, DehazeFormer, ...).
+# Las banderas de la CLI tienen prioridad sobre estos valores.
+short_side: 288          # lado corto del JPEG guardado [px] (mismo para todas las fuentes)
+one_a_per_beta: true     # una A por (escena, beta), elegida con la semilla (~14,4k imágenes)
+max_scenes: null         # submuestreo de escenas (null = todas, ~2.061)
+seed: 42
+min_match_ratio: 0.9     # fracción mínima de nombres con el patrón oficial
+with_clear: false        # incluir también las imágenes limpias '{id}.jpg' (is_clear)
+# Split (lo aplica `camanchaca split`): agrupado por escena, 70/15/15
+val_frac: 0.15
+test_frac: 0.15
