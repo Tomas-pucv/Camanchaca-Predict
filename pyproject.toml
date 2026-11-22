@@ -30,7 +30,8 @@ dependencies = [
 
 [project.optional-dependencies]
 demo = ["gradio>=6.29,<7"]
-data = ["cityscapesscripts>=2.2", "kaggle>=1.6"]
+# six: kaggle 2.x lo importa sin declararlo (en Colab ya viene instalado)
+data = ["cityscapesscripts>=2.2", "kaggle>=1.6", "six"]
 dev = ["pytest>=7.4", "nbformat>=5.9", "nbclient>=0.10", "ipykernel>=6.0", "gradio_client>=1.0"]
 
 [project.scripts]

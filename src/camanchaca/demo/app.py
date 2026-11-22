@@ -734,10 +734,12 @@ def launch_demo(predictors: dict | None = None, share: bool = False,
 
     predictors = dict(predictors or {})
     info = describe_predictors(predictors)
-    print(f"[demo] {info}")
+    # flush: con stdout redirigido a un archivo (CI, logs, `!python app/app.py` en Colab)
+    # el búfer no se vacía si el proceso termina con SIGTERM y estas líneas se pierden.
+    print(f"[demo] {info}", flush=True)
     if not predictors:
         print("[demo] La interfaz arranca igual; la estimación mostrará un error hasta "
-              "cargar checkpoints.")
+              "cargar checkpoints.", flush=True)
     examples = example_images()
     sim_examples = [synthetic_clear_example()]
     demo = build_demo(predictors, examples=examples, info=info, sim_examples=sim_examples)
