@@ -134,7 +134,8 @@ def smoke_warning(sources) -> str:
 REPORT_SECTIONS = [
     ("data_counts.md", "Datos",
      "Número de imágenes por split × fuente × banda (salida de `camanchaca split`)."),
-    ("lr_sweep_*.md", "Barrido de tasa de aprendizaje",
+    # `lr_sweep.md` (experimento main) o `lr_sweep_<exp>.md` (los demás)
+    ("lr_sweep*.md", "Barrido de tasa de aprendizaje",
      "Misma grilla y presupuesto para ambas arquitecturas; LR elegido solo en val."),
     ("metrics_val.md", "Métricas en validación",
      "Conjunto usado para seleccionar modelos e hiperparámetros (no es una estimación "
