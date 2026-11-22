@@ -16,5 +16,6 @@ timm>=1.0.15,<2
 gradio>=6.29,<7          # demo
 cityscapesscripts>=2.2   # descarga de Cityscapes/Foggy Cityscapes (csDownload)
 kaggle>=1.6              # descarga de RESIDE-OTS
+six                      # kaggle 2.x lo importa sin declararlo
 pytest>=7.4              # tests
 nbformat>=5.9

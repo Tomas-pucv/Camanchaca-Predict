@@ -296,6 +296,12 @@ Notas:
   para calcular $V_{det}$.
 - Variables de entorno: `CAMANCHACA_DATA`, `CAMANCHACA_RUNS` y
   `CAMANCHACA_REPORTS`.
+- **Reportes en Colab.** Cada notebook corre en su propia máquina y `/content`
+  se borra al cerrar la sesión, así que los notebooks fijan
+  `CAMANCHACA_REPORTS=MyDrive/camanchaca/reports`: las tablas y figuras de
+  02–05 se acumulan ahí. Los notebooks 03, 04 y 05 terminan con `camanchaca
+  report` y dejan `MyDrive/camanchaca/reports_main.zip`; descomprimirlo en la
+  raíz del repo y commitear `reports/`.
 - Atajos: `make sweep`, `make train`, `make evaluate`, `make final`,
   `make interpret`, `make cars` y `make report`.
 

@@ -274,3 +274,15 @@ def test_vdet_ignores_sparse_bins():
     assert fog0["recall"] == pytest.approx(1 / 3)       # el recall absoluto se informa
     md = recall_markdown(rec, ["clear", "fog"], {"min_gt": 20})
     assert "3 (< 20)" in md and "[1/3]" in md and "[25/25]" in md
+
+
+def test_report_includes_sweep_table_of_main(tmp_path):
+    """El barrido de `main` se llama lr_sweep.md (sin sufijo): debe tener su sección."""
+    from camanchaca.evaluation.tables import build_report
+    tdir = tmp_path / "tables"
+    tdir.mkdir()
+    (tdir / "lr_sweep.md").write_text("# Barrido de LR — experimento `main`\n\n| a |\n|---|\n| 1 |\n",
+                                      encoding="utf-8")
+    text = build_report(tmp_path).read_text(encoding="utf-8")
+    assert "## Barrido de tasa de aprendizaje" in text
+    assert "## Otras tablas" not in text
