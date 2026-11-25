@@ -147,7 +147,8 @@ Particiones:
   usan para entrenar ni para elegir nada.
 - **Congelamiento:** `camanchaca split` escribe en
   `data/splits/v1/SPLIT_INFO.json` los conteos y el sha256 de cada CSV.
-  sha256 de `test.csv` congelado: `[COMPLETAR al congelar los datos]`.
+  - sha256 de `test.csv` congelado: `ce6bb77e3e6d9244949e53c7c4c284e3d27166ca59e4d2555dafdca598f735e5`.
+  - sha256 de `ext.csv` congelado: `fbd7804cffd936bc055e3e41779a32664763bde562a0f88de5b640b2993bcaa3`.
 
 AIR-VIEW (visibilidad medida) se consideró, pero casi todas sus etiquetas
 superan 1,6 km y requiere suscripción. Queda como trabajo relacionado.
