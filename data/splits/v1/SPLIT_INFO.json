@@ -1,0 +1,233 @@
+{
+  "params": {
+    "seed": 42,
+    "val_frac": 0.15,
+    "test_frac": 0.15,
+    "val_cities": [
+      "hanover",
+      "jena",
+      "tubingen"
+    ],
+    "test_cities": [
+      "frankfurt",
+      "lindau",
+      "munster"
+    ],
+    "manifests": [
+      "cs_fog.csv",
+      "foggy_cs.csv",
+      "hazerd.csv",
+      "ohaze.csv",
+      "reside_ots.csv"
+    ]
+  },
+  "n_total": 36542,
+  "n_by_split": {
+    "train": 27242,
+    "test": 4670,
+    "val": 4465,
+    "ext": 165
+  },
+  "n_groups_by_split": {
+    "ext": 60,
+    "test": 545,
+    "train": 4113,
+    "val": 574
+  },
+  "counts": [
+    {
+      "split": "ext",
+      "source": "hazerd",
+      "band": "aceptable",
+      "n": 30
+    },
+    {
+      "split": "ext",
+      "source": "hazerd",
+      "band": "alto_riesgo",
+      "n": 15
+    },
+    {
+      "split": "ext",
+      "source": "hazerd",
+      "band": "critico",
+      "n": 15
+    },
+    {
+      "split": "ext",
+      "source": "hazerd",
+      "band": "precaucion",
+      "n": 15
+    },
+    {
+      "split": "ext",
+      "source": "ohaze",
+      "band": "",
+      "n": 90
+    },
+    {
+      "split": "test",
+      "source": "cs_fog",
+      "band": "aceptable",
+      "n": 401
+    },
+    {
+      "split": "test",
+      "source": "cs_fog",
+      "band": "alto_riesgo",
+      "n": 155
+    },
+    {
+      "split": "test",
+      "source": "cs_fog",
+      "band": "critico",
+      "n": 267
+    },
+    {
+      "split": "test",
+      "source": "cs_fog",
+      "band": "precaucion",
+      "n": 177
+    },
+    {
+      "split": "test",
+      "source": "foggy_cs",
+      "band": "aceptable",
+      "n": 1000
+    },
+    {
+      "split": "test",
+      "source": "foggy_cs",
+      "band": "precaucion",
+      "n": 500
+    },
+    {
+      "split": "test",
+      "source": "reside_ots",
+      "band": "alto_riesgo",
+      "n": 310
+    },
+    {
+      "split": "test",
+      "source": "reside_ots",
+      "band": "critico",
+      "n": 1860
+    },
+    {
+      "split": "train",
+      "source": "cs_fog",
+      "band": "aceptable",
+      "n": 1857
+    },
+    {
+      "split": "train",
+      "source": "cs_fog",
+      "band": "alto_riesgo",
+      "n": 852
+    },
+    {
+      "split": "train",
+      "source": "cs_fog",
+      "band": "critico",
+      "n": 1478
+    },
+    {
+      "split": "train",
+      "source": "cs_fog",
+      "band": "precaucion",
+      "n": 845
+    },
+    {
+      "split": "train",
+      "source": "foggy_cs",
+      "band": "aceptable",
+      "n": 8082
+    },
+    {
+      "split": "train",
+      "source": "foggy_cs",
+      "band": "precaucion",
+      "n": 4041
+    },
+    {
+      "split": "train",
+      "source": "reside_ots",
+      "band": "alto_riesgo",
+      "n": 1441
+    },
+    {
+      "split": "train",
+      "source": "reside_ots",
+      "band": "critico",
+      "n": 8646
+    },
+    {
+      "split": "val",
+      "source": "cs_fog",
+      "band": "aceptable",
+      "n": 345
+    },
+    {
+      "split": "val",
+      "source": "cs_fog",
+      "band": "alto_riesgo",
+      "n": 166
+    },
+    {
+      "split": "val",
+      "source": "cs_fog",
+      "band": "critico",
+      "n": 256
+    },
+    {
+      "split": "val",
+      "source": "cs_fog",
+      "band": "precaucion",
+      "n": 151
+    },
+    {
+      "split": "val",
+      "source": "foggy_cs",
+      "band": "aceptable",
+      "n": 918
+    },
+    {
+      "split": "val",
+      "source": "foggy_cs",
+      "band": "precaucion",
+      "n": 459
+    },
+    {
+      "split": "val",
+      "source": "reside_ots",
+      "band": "alto_riesgo",
+      "n": 310
+    },
+    {
+      "split": "val",
+      "source": "reside_ots",
+      "band": "critico",
+      "n": 1860
+    }
+  ],
+  "sha256": {
+    "train.csv": "27baf90a184e53c05d704d735d80d82f53b1959dfe1510e0625d827c93e291e9",
+    "val.csv": "41e4376bc8a85e26d52f40850802f71eb435578f74274775692af720b009366c",
+    "test.csv": "ce6bb77e3e6d9244949e53c7c4c284e3d27166ca59e4d2555dafdca598f735e5",
+    "ext.csv": "fbd7804cffd936bc055e3e41779a32664763bde562a0f88de5b640b2993bcaa3"
+  },
+  "manifests_sha256": {
+    "cs_fog.csv": "cf2a0ca1d11572630e771e109596c92725ad44e304442de01e03209f64da768a",
+    "foggy_cs.csv": "5a7415da4987bda911adabfa27307cb29e1e0421a2345e87ac9dfcfb6fec8e6d",
+    "hazerd.csv": "ff69d912c46a5f2d29f33bdf517fe3425993cf28661b6760bab0ec351979dae5",
+    "ohaze.csv": "c682aa74242fb5c085ca73168392b66e12050631d32c6076e3cb8361ce6fda52",
+    "reside_ots.csv": "ea78b3618cb4f4a853d98766750767591a4a10e66c3b0454b20134954c7871b8"
+  },
+  "n_by_manifest": {
+    "foggy_cs.csv": 15000,
+    "reside_ots.csv": 14427,
+    "cs_fog.csv": 6950,
+    "ohaze.csv": 90,
+    "hazerd.csv": 75
+  }
+}
