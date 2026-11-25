@@ -149,8 +149,9 @@ def test_full_pipeline(env):
         vals.append(compute_all(df.loc[lab, "v_true_m"], df.loc[lab, "v_pred_m"])["mae_log10"])
     row = met[(met.model == "resnet50") & (met.subset_type == "global")
               & (met.metric == "mae_log10")].iloc[0]
-    assert row["mean"] == pytest.approx(np.mean(vals))
-    assert row["sd"] == pytest.approx(np.std(vals, ddof=1))
+    # metrics_test.csv guarda 6 cifras significativas (%.6g): error relativo hasta 5e-6
+    assert row["mean"] == pytest.approx(np.mean(vals), rel=1e-5)
+    assert row["sd"] == pytest.approx(np.std(vals, ddof=1), rel=1e-5)
     assert row["n_seeds"] == 2 and row["ci_lo"] <= row["ci_hi"] and row["n_boot"] == 50
     paired = pd.read_csv(tables / "paired_test.csv")
     assert set(paired["metric"]) == {"mae_log10", "false_safe_rate", "reg_macro_f1"}
