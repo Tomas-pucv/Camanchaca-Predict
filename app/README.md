@@ -7,11 +7,11 @@ repositorio. Corre en la **CPU de un portátil** (no necesita GPU).
 | Salida | Qué es |
 |---|---|
 | Visibilidad estimada (MOR) | media geométrica de las semillas, en metros (V = 2,996/β) |
-| Banda de seguridad | probabilidad media (cabeza ordinal CORN) de Crítico <50 m / Alto riesgo 50–100 / Precaución 100–200 / Aceptable ≥200 m |
+| Banda de seguridad | probabilidad media (cabeza ordinal CORN) de Crítico <50 m / Alto riesgo 50–100 / Precaución 100–200 / Aceptable ≥200 m. Si la banda más probable no coincide con la de V̂ (regresión), el texto de la visibilidad lo advierte: es una señal de estimación incierta |
 | Incertidumbre | dispersión entre semillas como factor multiplicativo (×); no es un IC calibrado |
 | Velocidad segura | **ILUSTRATIVA**: velocidad cuya distancia de detención (t = 2,5 s, μ = 0,4) cabe en V̂ |
 | Mapa | Grad-CAM de −ŷ (evidencia de MENOR visibilidad; si ninguna región la aporta se avisa "VACÍO" y se muestra la imagen sin colorear) o attention rollout (solo DeiT, escala min–max) |
-| Avisos | posible noche, escala de grises, imagen diminuta, proporción extrema, transparencia |
+| Avisos | posible noche (imagen oscura, o dominante naranja de alumbrado público), escala de grises (solo si los canales son prácticamente iguales: la niebla densa no lo dispara), imagen diminuta, proporción extrema, transparencia |
 
 Pestañas: **Estimar visibilidad**, **Simular niebla** (niebla sintética sobre
 una foto despejada con profundidad *aproximada* de plano-suelo, y comparación V

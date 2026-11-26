@@ -48,6 +48,12 @@ SIM_MAX_SIDE = 1024      # px: tamaño de trabajo de la simulación de niebla
 MIN_SIDE_WARN = 64       # px: bajo esto la imagen se considera diminuta
 ASPECT_WARN = 2.5        # proporción lado mayor / lado menor
 DARK_LUM = 0.15          # luminancia media bajo la cual se sospecha noche
+# Noche con alumbrado (sodio/halógeno): la foto no es oscura pero tiene una dominante
+# naranja fuerte. Medido en fotos de prueba: noche con faroles = 83 % de píxeles cálidos
+# y R-B medio 0,35; fotos diurnas (con y sin niebla) <= 4 % y <= 0,04.
+WARM_FRAC = 0.5          # fracción de píxeles cálidos (R-B > 0,25 y croma > 0,25)
+WARM_RB = 0.2            # diferencia media R-B (dominante cálida de toda la imagen)
+GRAY_DIFF = 0.03         # escala de grises: canales casi idénticos (p99,9 de |R-G|, |G-B|)
 TRAIN_RANGE_M = (15.0, 1000.0)
 SIM_AIRLIGHT = 0.85
 SIM_CAM_HEIGHT_M = 1.5
@@ -309,13 +315,24 @@ def ood_warnings(img: Image.Image, info: dict | None = None) -> list[str]:
         small.thumbnail((256, 256), Image.BILINEAR)
     arr = np.asarray(small, dtype=np.float64) / 255.0
     lum = arr @ np.array([0.299, 0.587, 0.114])
-    chroma = float((arr.max(-1) - arr.min(-1)).mean())
+    chroma = arr.max(-1) - arr.min(-1)
+    red_blue = arr[..., 0] - arr[..., 2]
+    warm_frac = float(((red_blue > 0.25) & (chroma > 0.25)).mean())
+    channel_diff = np.maximum(np.abs(arr[..., 0] - arr[..., 1]),
+                              np.abs(arr[..., 1] - arr[..., 2]))
     out = []
     if lum.mean() < DARK_LUM:
         out.append(f"Imagen muy oscura (luminancia media {lum.mean():.2f}): posible escena "
                    "de NOCHE. El modelo se entrenó solo con imágenes diurnas; la "
                    "estimación no es confiable.")
-    if chroma < 0.02 or str(info.get("orig_mode", "")).startswith(("L", "I", "F", "1")):
+    elif warm_frac > WARM_FRAC and red_blue.mean() > WARM_RB:
+        out.append(f"Dominante naranja muy fuerte ({warm_frac * 100:.0f} % de la imagen): posible "
+                   "escena de NOCHE con alumbrado público, o atardecer. El modelo se entrenó "
+                   "solo con luz de día; la estimación no es confiable.")
+    # Solo una imagen realmente gris (canales casi idénticos): la niebla densa desatura
+    # mucho pero conserva algo de color (letreros, luces), y no debe disparar este aviso.
+    if (str(info.get("orig_mode", "")).startswith(("L", "I", "F", "1"))
+            or float(np.quantile(channel_diff, 0.999)) < GRAY_DIFF):
         out.append("Imagen en escala de grises (sin color): la niebla también desatura, "
                    "así que el modelo puede confundirla con niebla densa.")
     if min(w, h) < MIN_SIDE_WARN:
@@ -440,6 +457,26 @@ def format_visibility(v: float) -> str:
     return txt
 
 
+def band_agreement_note(v: float, probs, probs_source: str) -> str:
+    """Aviso si la banda de V̂ (regresión) difiere de la más probable de la cabeza CORN.
+
+    La app muestra ambas salidas (texto de V̂ y gráfico de bandas). En fotos reales
+    fuera de distribución pueden discrepar; en vez de dejar la contradicción a la
+    vista sin explicar, se avisa: es una señal de que la estimación es incierta.
+    """
+    b_reg = int(band_index(v))
+    if b_reg < 0 or not str(probs_source).startswith("cabeza ordinal"):
+        return ""
+    probs = np.asarray(probs, dtype=np.float64)
+    b_ord = int(np.argmax(probs))
+    if b_ord == b_reg:
+        return ""
+    return (f"\nOjo: la cabeza ordinal del modelo prefiere otra banda "
+            f"({BAND_LABELS_ES[b_ord]}, {probs[b_ord] * 100:.0f} %). Las dos salidas no "
+            "coinciden: la estimación es incierta y la foto puede estar fuera de lo que "
+            "el modelo vio al entrenar.")
+
+
 def format_speed(v: float, factor: float = float("nan")) -> str:
     lines = ["ILUSTRATIVO — no es una recomendación de conducción.",
              f"Velocidad cuya distancia de detención cabe en V̂ = {v:.0f} m: "
@@ -516,7 +553,9 @@ def analyze(image, model_name=None, map_kind: str = "gradcam", predictors: dict 
     if overlay is not None:
         latency += f"; mapa: {map_ms:.0f} ms"
     warns_md = _warnings_md(warns) + f"\n\n*Mapa:* {map_note}. *Bandas:* {res['probs_source']}."
-    return (format_visibility(v), _band_dict(res["band_probs"]), format_speed(v, res["factor"]),
+    vis_txt = format_visibility(v) + band_agreement_note(v, res["band_probs"],
+                                                         res["probs_source"])
+    return (vis_txt, _band_dict(res["band_probs"]), format_speed(v, res["factor"]),
             format_uncertainty(res), latency, overlay, warns_md)
 
 

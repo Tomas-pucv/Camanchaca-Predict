@@ -240,6 +240,28 @@ def test_ood_warnings():
     assert "proporción" in warns(rng.integers(0, 256, (64, 400, 3), dtype=np.uint8))
     color = rng.integers(60, 256, (128, 128, 3), dtype=np.uint8)
     assert warns(color) == ""
+    # noche con alumbrado de sodio: no es oscura, pero tiene una dominante naranja fuerte
+    sodium = np.clip(np.array([0.85, 0.55, 0.20]) + rng.normal(0, 0.05, (128, 128, 3)), 0, 1)
+    assert "noche" in warns((sodium * 255).astype(np.uint8))
+    # niebla densa: casi sin color, pero con un letrero amarillo -> NO es escala de grises
+    fog = np.clip(0.62 + rng.normal(0, 0.01, (128, 128, 1)), 0, 1).repeat(3, -1)
+    fog = fog + rng.normal(0, 0.004, fog.shape)
+    fog[40:52, 60:72] = [0.80, 0.70, 0.15]
+    assert "escala de grises" not in warns((np.clip(fog, 0, 1) * 255).astype(np.uint8))
+    # foto en gris guardada como RGB (canales idénticos) -> sí es escala de grises
+    gray_rgb = rng.integers(0, 256, (64, 64, 1), dtype=np.uint8).repeat(3, -1)
+    assert "escala de grises" in warns(gray_rgb)
+
+
+def test_band_agreement_note():
+    corn = "cabeza ordinal (CORN)"
+    # V̂ = 143 m (Precaución) pero la cabeza ordinal prefiere Alto riesgo -> aviso
+    note = demo_app.band_agreement_note(143.0, [0.0, 0.77, 0.0, 0.23], corn)
+    assert "no coinciden" in note and "Alto riesgo" in note and "77 %" in note
+    # coinciden -> sin aviso; votos de la regresión (sin CORN) -> sin aviso
+    assert demo_app.band_agreement_note(143.0, [0.0, 0.1, 0.8, 0.1], corn) == ""
+    assert demo_app.band_agreement_note(143.0, [0.0, 1.0, 0.0, 0.0],
+                                        "votos de la regresión") == ""
 
 
 def test_safe_speed_text_is_illustrative():
