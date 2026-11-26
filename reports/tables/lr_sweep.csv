@@ -1,0 +1,7 @@
+model,lr,lr_head,seed,max_steps,selection_metric,best_value,best_step,diverged,steps_done,wall_time_s,train_images_per_s,selected
+resnet50,3e-05,0.0003,0,1200,val_log10_mae_macro_source,0.12214,900,False,1200,259.14,366.69,False
+resnet50,0.0001,0.001,0,1200,val_log10_mae_macro_source,0.0893052,900,False,1200,257.99,366.57,False
+resnet50,0.0003,0.003,0,1200,val_log10_mae_macro_source,0.0726104,1200,False,1200,247.5,383.63,True
+deit_s,3e-05,0.0003,0,1200,val_log10_mae_macro_source,0.0566211,1200,False,1200,245.72,385.49,False
+deit_s,0.0001,0.001,0,1200,val_log10_mae_macro_source,0.0522154,1200,False,1200,245.93,384.16,True
+deit_s,0.0003,0.003,0,1200,val_log10_mae_macro_source,0.0522539,1200,False,1200,244.3,387.54,False

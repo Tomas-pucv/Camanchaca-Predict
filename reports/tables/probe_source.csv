@@ -1,0 +1,4 @@
+representation,model,n,n_classes,n_groups,chance,balanced_acc,acc,n_splits
+"resnet50 (backbone, semilla 0)",resnet50,900,3,425,0.333333,0.92,0.92,5
+"deit_s (backbone, semilla 0)",deit_s,900,3,425,0.333333,0.958889,0.958889,5
+"features físicas (baseline, 12 dim)",physics,900,3,425,0.333333,0.84,0.84,5

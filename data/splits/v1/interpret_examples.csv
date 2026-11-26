@@ -1,0 +1,17 @@
+relpath,source,group,v_mor_m,band,aux_dist,aux_labels
+images/cs_fog/frankfurt/frankfurt_000001_028232_k1.jpg,cs_fog,frankfurt_000001,44.9079,critico,aux/cs/frankfurt_000001_028232_dist.npy,aux/cs/frankfurt_000001_028232_labelIds.png
+images/cs_fog/munster/munster_000157_000019_k1.jpg,cs_fog,munster_000157,17.5892,critico,aux/cs/munster_000157_000019_dist.npy,aux/cs/munster_000157_000019_labelIds.png
+images/cs_fog/frankfurt/frankfurt_000000_005543_k1.jpg,cs_fog,frankfurt_000000,69.6477,alto_riesgo,aux/cs/frankfurt_000000_005543_dist.npy,aux/cs/frankfurt_000000_005543_labelIds.png
+images/cs_fog/frankfurt/frankfurt_000001_066574_k1.jpg,cs_fog,frankfurt_000001,54.3951,alto_riesgo,aux/cs/frankfurt_000001_066574_dist.npy,aux/cs/frankfurt_000001_066574_labelIds.png
+images/cs_fog/frankfurt/frankfurt_000000_021667_k1.jpg,cs_fog,frankfurt_000000,140.6,precaucion,aux/cs/frankfurt_000000_021667_dist.npy,aux/cs/frankfurt_000000_021667_labelIds.png
+images/cs_fog/frankfurt/frankfurt_000001_023235_k0.jpg,cs_fog,frankfurt_000001,190.985,precaucion,aux/cs/frankfurt_000001_023235_dist.npy,aux/cs/frankfurt_000001_023235_labelIds.png
+images/cs_fog/frankfurt/frankfurt_000000_012121_k0.jpg,cs_fog,frankfurt_000000,326.622,aceptable,aux/cs/frankfurt_000000_012121_dist.npy,aux/cs/frankfurt_000000_012121_labelIds.png
+images/cs_fog/lindau/lindau_000029_000019_k1.jpg,cs_fog,lindau_000029,335.055,aceptable,aux/cs/lindau_000029_000019_dist.npy,aux/cs/lindau_000029_000019_labelIds.png
+images/foggy_cs/val/frankfurt/frankfurt_000001_054640_beta_0.02.jpg,foggy_cs,frankfurt_000001,149.787,precaucion,,
+images/foggy_cs/val/lindau/lindau_000022_000019_beta_0.02.jpg,foggy_cs,lindau_000022,149.787,precaucion,,
+images/foggy_cs/val/frankfurt/frankfurt_000001_019854_beta_0.01.jpg,foggy_cs,frankfurt_000001,299.573,aceptable,,
+images/foggy_cs/val/lindau/lindau_000050_000019_beta_0.01.jpg,foggy_cs,lindau_000050,299.573,aceptable,,
+images/reside_ots/2948_0.8_0.06.jpg,reside_ots,2948,49.9289,critico,,
+images/reside_ots/5920_0.95_0.2.jpg,reside_ots,5920,14.9787,critico,,
+images/reside_ots/5810_0.9_0.04.jpg,reside_ots,5810,74.8933,alto_riesgo,,
+images/reside_ots/8734_0.9_0.04.jpg,reside_ots,8734,74.8933,alto_riesgo,,

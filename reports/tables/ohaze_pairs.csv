@@ -1,0 +1,12 @@
+set,model,kind,seed,n_pairs,n_pairs_valid,frac_hazy_lower,mean_log10_ratio
+ext,resnet50,modelo,0,45,45,0.977778,-0.623899
+ext,resnet50,modelo,1,45,45,1,-0.634602
+ext,resnet50,modelo,2,45,45,1,-0.620685
+ext,deit_s,modelo,0,45,45,1,-0.674338
+ext,deit_s,modelo,1,45,45,0.977778,-0.607688
+ext,deit_s,modelo,2,45,45,1,-0.604399
+ext,majority_band,baseline,0,45,45,0.5,0
+ext,mean_by_source,baseline,0,45,45,0.5,0
+ext,mean_global,baseline,0,45,45,0.5,0
+ext,physics_hgb,baseline,0,45,45,0.955556,-0.660086
+ext,physics_ridge,baseline,0,45,45,0.955556,-0.63053

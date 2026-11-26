@@ -1,0 +1,10 @@
+set,model_a,model_b,subset_type,subset,metric,diff,ci_lo,ci_hi,p,n_boot,n_undefined,n_groups
+ext,resnet50,deit_s,global,todas,mae_log10,-0.0228115,-0.0434218,-0.00326579,0.022,2000,0,15
+ext,resnet50,deit_s,global,todas,false_safe_rate,0,0,0,1,2000,0,15
+ext,resnet50,deit_s,global,todas,reg_macro_f1,0.00951733,0,0.0209191,0.052,2000,0,15
+ext,resnet50,deit_s,fuente,hazerd,mae_log10,-0.0228115,-0.0451761,-0.00252395,0.026,2000,0,15
+ext,resnet50,deit_s,fuente,hazerd,false_safe_rate,0,0,0,1,2000,0,15
+ext,resnet50,deit_s,fuente,hazerd,reg_macro_f1,0.00951733,0.000319203,0.0208571,0.047,2000,0,15
+ext,resnet50,deit_s,calidad,metrica,mae_log10,-0.0228115,-0.0439875,-0.00307663,0.016,2000,0,15
+ext,resnet50,deit_s,calidad,metrica,false_safe_rate,0,0,0,1,2000,0,15
+ext,resnet50,deit_s,calidad,metrica,reg_macro_f1,0.00951733,0,0.0215225,0.053,2000,0,15
