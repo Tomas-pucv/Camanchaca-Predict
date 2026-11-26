@@ -1,0 +1,6 @@
+condition,v_det_m,v_det_kind,v_det_lo,v_det_hi,boot_censored_frac,n_gt,n_detected,n_bins_ok,beta,v_mor_m
+foggy_b0.005,inf,censurado_der,136.884,inf,0.836,3904,2953,15,0.005,599.146
+foggy_b0.01,115.395,interp,97.3228,120.41,0.001,3904,2695,15,0.01,299.573
+foggy_b0.02,70.8253,interp,63.4099,73.7817,0,3904,2185,15,0.02,149.787
+csfog_v100,49.8029,interp,47.4653,51.3067,0,3904,1677,15,0.0299573,100
+csfog_v50,33.1503,interp,31.8387,35.4083,0,3904,1054,15,0.0599146,50

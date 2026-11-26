@@ -441,6 +441,55 @@ Lectura: si la hipótesis física es correcta, el mapa −ŷ debería concentrar
 
 Fuente: [`tables/attribution.md`](tables/attribution.md)
 
+## Detección de autos bajo niebla
+
+Recall relativo por distancia.
+
+Detector: Faster R-CNN R50-FPN v2 (pesos `coco`), umbral de puntaje 0.5, IoU ≥ 0.5, clases car+truck+bus; GT: altura ≥ 15 px (resolución completa) y profundidad válida; 475 frames × 6 condiciones.
+
+Cada celda: recall absoluto (recall relativo a 'clear') [detectados/GT]; n = autos GT por bin (idéntico en todas las condiciones). Bins con n < 20: recall relativo NO definido (no entra en V_det).
+
+| Distancia (m) | n | clear | foggy_b0.005 | foggy_b0.01 | foggy_b0.02 | csfog_v100 | csfog_v50 |
+|---|---|---|---|---|---|---|---|
+| 0–10 | 157 | 0.97 [153/157] | 0.97 (0.99) [152/157] | 0.97 (1) [153/157] | 0.96 (0.99) [151/157] | 0.92 (0.95) [145/157] | 0.89 (0.91) [139/157] |
+| 10–20 | 384 | 0.94 [360/384] | 0.94 (1) [360/384] | 0.94 (1) [360/384] | 0.93 (1) [359/384] | 0.93 (0.99) [358/384] | 0.88 (0.94) [338/384] |
+| 20–30 | 522 | 0.89 [464/522] | 0.9 (1) [469/522] | 0.88 (0.98) [457/522] | 0.87 (0.98) [456/522] | 0.8 (0.9) [419/522] | 0.65 (0.73) [340/522] |
+| 30–40 | 480 | 0.85 [407/480] | 0.84 (0.99) [401/480] | 0.83 (0.98) [400/480] | 0.79 (0.94) [381/480] | 0.7 (0.83) [336/480] | 0.38 (0.45) [182/480] |
+| 40–50 | 435 | 0.86 [372/435] | 0.83 (0.98) [363/435] | 0.81 (0.95) [353/435] | 0.72 (0.85) [315/435] | 0.53 (0.62) [232/435] | 0.11 (0.13) [49/435] |
+| 50–60 | 375 | 0.76 [284/375] | 0.73 (0.96) [272/375] | 0.65 (0.86) [243/375] | 0.51 (0.67) [191/375] | 0.28 (0.37) [104/375] | 0.016 (0.021) [6/375] |
+| 60–70 | 326 | 0.75 [243/326] | 0.69 (0.93) [225/326] | 0.67 (0.89) [217/326] | 0.44 (0.6) [145/326] | 0.17 (0.23) [56/326] | 0 (0) [0/326] |
+| 70–80 | 275 | 0.73 [202/275] | 0.72 (0.98) [197/275] | 0.61 (0.83) [168/275] | 0.32 (0.43) [87/275] | 0.069 (0.094) [19/275] | 0 (0) [0/275] |
+| 80–90 | 267 | 0.72 [192/267] | 0.67 (0.94) [180/267] | 0.58 (0.8) [154/267] | 0.2 (0.28) [54/267] | 0.03 (0.042) [8/267] | 0 (0) [0/267] |
+| 90–100 | 160 | 0.67 [107/160] | 0.54 (0.81) [87/160] | 0.39 (0.58) [62/160] | 0.12 (0.18) [19/160] | 0 (0) [0/160] | 0 (0) [0/160] |
+| 100–110 | 138 | 0.63 [87/138] | 0.52 (0.83) [72/138] | 0.32 (0.51) [44/138] | 0.1 (0.16) [14/138] | 0 (0) [0/138] | 0 (0) [0/138] |
+| 110–120 | 135 | 0.61 [83/135] | 0.5 (0.81) [67/135] | 0.31 (0.51) [42/135] | 0.052 (0.084) [7/135] | 0 (0) [0/135] | 0 (0) [0/135] |
+| 120–130 | 127 | 0.65 [82/127] | 0.47 (0.73) [60/127] | 0.23 (0.35) [29/127] | 0.031 (0.049) [4/127] | 0 (0) [0/127] | 0 (0) [0/127] |
+| 130–140 | 69 | 0.67 [46/69] | 0.43 (0.65) [30/69] | 0.1 (0.15) [7/69] | 0.029 (0.043) [2/69] | 0 (0) [0/69] | 0 (0) [0/69] |
+| 140–150 | 54 | 0.59 [32/54] | 0.33 (0.56) [18/54] | 0.11 (0.19) [6/54] | 0 (0) [0/54] | 0 (0) [0/54] | 0 (0) [0/54] |
+
+Fuente: [`tables/cars_recall.md`](tables/cars_recall.md)
+
+## Distancia de detección V_det vs. visibilidad MOR
+
+V_det = primera distancia donde el recall relativo a 'clear' cae bajo 0.5 (interpolación lineal entre centros de bin). IC 95 % bootstrap agrupado por secuencia (218 grupos, 1000 remuestreos). Solo entran los bins con ≥ 20 autos GT (en la estimación y en cada remuestreo; 'Bins' = bins con recall relativo definido). Censura: '> x' = el recall relativo nunca cae bajo el umbral en el rango; '≤ x' = ya está bajo en el primer bin válido.
+
+Detector: Faster R-CNN R50-FPN v2 (pesos `coco`), umbral de puntaje 0.5, IoU ≥ 0.5, clases car+truck+bus; GT: altura ≥ 15 px (resolución completa) y profundidad válida; 475 frames × 6 condiciones.
+
+| Condición | β (1/m) | V MOR (m) | V_det | IC V_det | V_det / V MOR | Vel. segura con V_det (km/h) | Vel. segura con V MOR (km/h) | detectados/GT | Bins |
+|---|---|---|---|---|---|---|---|---|---|
+| foggy_b0.005 | 0.005 | 599 | > 145 m | [137 m, > 145 m] | > 0.24 | > 91 | 214 | 2953/3904 | 15 |
+| foggy_b0.01 | 0.01 | 300 | 115 m | [97 m, 120 m] | 0.39 | 79 | 143 | 2695/3904 | 15 |
+| foggy_b0.02 | 0.02 | 150 | 71 m | [63 m, 74 m] | 0.47 | 57 | 93 | 2185/3904 | 15 |
+| csfog_v100 | 0.03 | 100 | 50 m | [47 m, 51 m] | 0.5 | 44 | 72 | 1677/3904 | 15 |
+| csfog_v50 | 0.0599 | 50 | 33 m | [32 m, 35 m] | 0.66 | 33 | 44 | 1054/3904 | 15 |
+
+Distancia de detención de referencia (reacción 2,5 s, pavimento mojado μ = 0,4): 30 km/h → 30 m, 50 km/h → 59 m, 80 km/h → 118 m, 100 km/h → 168 m.
+La velocidad 'segura' es la que hace que la distancia de detención quepa en la distancia indicada; es ILUSTRATIVA, no una recomendación operativa.
+
+Lectura: si V_det < V MOR, el detector deja de ver autos ANTES de la visibilidad meteorológica (la MOR describe un objeto negro grande y contrastado; un auto real es más chico y de menor contraste).
+
+Fuente: [`tables/cars_vdet.md`](tables/cars_vdet.md)
+
 ## Costo computacional
 
 Parámetros, GMACs, latencia y throughput (decisión velocidad vs. precisión).
@@ -518,6 +567,10 @@ Fuente: [`tables/latency.md`](tables/latency.md)
 ### Velocidad vs. precisión
 
 ![pareto_speed_accuracy.png](figures/pareto_speed_accuracy.png)
+
+### cars recall vs distance
+
+![cars_recall_vs_distance.png](figures/cars_recall_vs_distance.png)
 
 ### interpret examples neg
 
