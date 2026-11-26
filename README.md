@@ -8,7 +8,7 @@
 
 **Curso:** Aprendizaje Automático II, Proyecto Aplicado 2026-2 (PUCV).
 **Grupo:** 5.
-**Equipo:** Tomás Ignacio Moraga y Nelson Mauricio Fuentes.
+**Equipo:** Tomás Moraga, Nelson Fuentes y Fernando Guerrero.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/PyTorch-2.4%2B-EE4C2C?logo=pytorch&logoColor=white)
