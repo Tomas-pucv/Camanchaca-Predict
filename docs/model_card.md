@@ -2,12 +2,14 @@
 
 Ficha según *Model Cards for Model Reporting* (Mitchell et al., 2019).
 
-> **Estado (3-nov-2026).** Arquitectura, protocolo y evaluación están
-> implementados y probados en CPU con datos sintéticos y pesos aleatorios.
-> **Todavía no hay métricas reales**: se generan en Colab
-> (`camanchaca evaluate … --final`, luego `camanchaca report`) y se copian
-> desde `reports/RESULTADOS.md`. Toda cifra marcada `[COMPLETAR]` está
-> pendiente.
+> **Estado (26-nov-2026).** Evaluación final hecha en Colab con los datos
+> reales. Las cifras de esta ficha salen de `reports/RESULTADOS.md`.
+>
+> **Resumen.** En el test interno (niebla sintética, 4.670 imágenes) DeiT-S
+> tiene menor error que ResNet-50 (log10-MAE 0,0456 frente a 0,0619;
+> diferencia pareada 0,0163 [0,0119; 0,0193]) y es más rápido en CPU. En
+> HazeRD, fuera del dominio de entrenamiento, ambos son peores que predecir la
+> media.
 
 ## 1. Detalles del modelo
 
@@ -50,7 +52,9 @@ Ficha según *Model Cards for Model Reporting* (Mitchell et al., 2019).
 digitalizada desde la regresión), `band_ord` y `ord_probs` (cabeza CORN). La
 demo promedia las semillas con media geométrica y muestra su dispersión.
 
-**Versión / pesos:** `[COMPLETAR: tag y sha256 de app/weights.json]`.
+**Versión / pesos:** checkpoints `runs/main/<modelo>/seed<k>/best.pt` en el
+Drive del equipo. El Release con `app/weights.json` (tag y sha256) está
+pendiente: `scripts/fetch_weights.py --make-manifest` (ver `app/README.md`).
 **Autores:** Tomás Ignacio Moraga y Nelson Mauricio Fuentes (G5, PUCV).
 **Licencia del código:** MIT.
 
@@ -113,14 +117,14 @@ por escena o por ciudad. Los conteos están en
 
 | Tabla / figura | Archivo | Estado |
 |---|---|---|
-| Métricas por modelo y fuente (test) | `reports/tables/metrics_test.md` | `[COMPLETAR]` |
-| Diferencia pareada ResNet − DeiT | `reports/tables/paired_test.md`, `paired_ext.md` | `[COMPLETAR]` |
-| Externos (HazeRD; pares O-HAZE) | `reports/tables/metrics_ext.md`, `ohaze_pairs.md` | `[COMPLETAR]` |
-| Sensibilidad a ε | `reports/tables/eps_sensitivity_test.md` | `[COMPLETAR]` |
-| Sonda de fuente / contrafactual | `reports/tables/probe_source.md`, `counterfactual.md` | `[COMPLETAR]` |
-| Atribución por distancia y clase (ejemplos fijos de `data/splits/v1/interpret_examples.csv`) | `reports/tables/attribution.md`, `reports/figures/interpret_examples_neg.png` | `[COMPLETAR]` |
-| Barrido de LR | `reports/tables/lr_sweep.md` (`runs/main/sweep/selected_lr.json`) | `[COMPLETAR]` |
-| Latencia | `reports/tables/latency.md`, `reports/figures/pareto_speed_accuracy.png` | `[COMPLETAR]` |
+| Métricas por modelo y fuente (test) | `reports/tables/metrics_test.md` | log10-MAE: ResNet-50 0,0619 ± 0,0008 [0,0586; 0,0669]; DeiT-S 0,0456 ± 0,0007 [0,0401; 0,0535]; mejor baseline (físico HGB) 0,137. Falso-seguro 0,86 % y 0,60 %; macro-F1 de bandas 0,895 y 0,915 |
+| Diferencia pareada ResNet − DeiT | `reports/tables/paired_test.md`, `paired_ext.md` | Test: 0,0163 [0,0119; 0,0193], excluye 0 en el global y en cada fuente (a favor de DeiT-S). HazeRD: −0,0228 [−0,0434; −0,0033] (a favor de ResNet-50) |
+| Externos (HazeRD; pares O-HAZE) | `reports/tables/metrics_ext.md`, `ohaze_pairs.md` | HazeRD: log10-MAE 0,817 (ResNet-50) y 0,839 (DeiT-S), frente a 0,429 de la media; subestiman. O-HAZE: 0,993 de los pares con V̂(niebla) < V̂(limpia) |
+| Sensibilidad a ε | `reports/tables/eps_sensitivity_test.md` | Con ε = 0,02 el macro-F1 baja a 0,806 (ResNet-50) y 0,863 (DeiT-S) y el falso-seguro sube a ~0,055; el orden entre modelos no cambia |
+| Sonda de fuente / contrafactual | `reports/tables/probe_source.md`, `counterfactual.md` | Sonda: 0,92 y 0,96 de exactitud balanceada (azar 0,33). Contrafactual: con niebla uniforme la predicción cambia ×1,38 (ResNet-50) y ×1,81 (DeiT-S) |
+| Atribución por distancia y clase (ejemplos fijos de `data/splits/v1/interpret_examples.csv`) | `reports/tables/attribution.md`, `reports/figures/interpret_examples_neg.png` | Mapa −ŷ: ResNet-50 concentra más masa en el tercil lejano (razón 1,5 frente a 0,97); DeiT-S, en cielo (2,0) y calzada (1,6). Solo 7–8 imágenes por mapa |
+| Barrido de LR | `reports/tables/lr_sweep.md` (`runs/main/sweep/selected_lr.json`) | ResNet-50: 3e-4 (borde de la grilla, mejor paso = último); DeiT-S: 1e-4 |
+| Latencia | `reports/tables/latency.md`, `reports/figures/pareto_speed_accuracy.png` | CPU fp32, lote 1: ResNet-50 54,7 ms; DeiT-S 29,9 ms. GPU fp16, lote 1: 7,6 y 5,1 ms |
 
 ## 8. Consideraciones éticas
 
@@ -139,6 +143,11 @@ por escena o por ciudad. Los conteos están en
   degradación en niebla real**, que este proyecto no puede cuantificar con
   visibilidad medida.
 - RESIDE aporta "visibilidad equivalente", no metros.
+- **Fuera del dominio de entrenamiento el modelo no sirve.** En HazeRD (fotos
+  de exteriores con niebla sintética y profundidad métrica) ambos modelos son
+  peores que predecir la media y subestiman la visibilidad.
+- La demo avisa cuando la banda de la regresión y la de la cabeza ordinal no
+  coinciden: en ese caso la estimación es incierta.
 - El modelo puede apoyarse en el contraste global o en la identidad del
   dataset (atajos). Antes de interpretar el desempeño, revisar
   `probe_source.md` y `counterfactual.md`.

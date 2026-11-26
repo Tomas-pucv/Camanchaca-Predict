@@ -37,26 +37,39 @@
   - Baselines triviales y físico (sin deep learning).
   - Sondas de atajo; Grad-CAM y attention rollout sobre los mismos ejemplos.
   - Recall de autos vs distancia por β; latencia CPU/GPU; demo Gradio.
-- **Estado (3-nov-2026).** **Código listo y probado** en CPU con datos
-  sintéticos (`pytest`, `camanchaca smoke`). **Resultados pendientes de correr
-  en Colab** con los datasets reales. Ninguna cifra de este README es un
-  resultado todavía.
+- **Estado (26-nov-2026).** Evaluación final hecha en Colab con los datos
+  reales. Todas las cifras salen de
+  [`reports/RESULTADOS.md`](reports/RESULTADOS.md).
 
 ## Resultados
 
 Las tablas y figuras las genera **solo el código**. `camanchaca report` las
-reúne en **[`reports/RESULTADOS.md`](reports/RESULTADOS.md)**, que se crea
-tras la evaluación final.
+reúne en **[`reports/RESULTADOS.md`](reports/RESULTADOS.md)**.
 
-| Modelo | log10-MAE macro (test) | Falso-seguro | macro-F1 bandas | ms/img CPU |
+Test interno (4.670 imágenes): media ± d.e. entre 3 semillas e IC 95 % por
+bootstrap agrupado. Latencia: CPU, fp32, lote 1.
+
+| Modelo | log10-MAE (test) [IC 95 %] | Falso-seguro | macro-F1 bandas | ms/img CPU |
 |---|---|---|---|---|
-| Baseline físico | [pendiente] | [pendiente] | [pendiente] | [pendiente] |
-| ResNet-50 (3 semillas) | [pendiente] | [pendiente] | [pendiente] | [pendiente] |
-| DeiT-S (3 semillas) | [pendiente] | [pendiente] | [pendiente] | [pendiente] |
+| Baseline físico (HGB) | 0,137 [0,127; 0,144] | 3,9 % | 0,736 | 22,9 (features) |
+| ResNet-50 (3 semillas) | 0,0619 ± 0,0008 [0,0586; 0,0669] | 0,86 % | 0,895 | 54,7 |
+| DeiT-S (3 semillas) | 0,0456 ± 0,0007 [0,0401; 0,0535] | 0,60 % | 0,915 | 29,9 |
 
 Regla de decisión, fijada antes de ver resultados: ResNet-50 y DeiT-S solo
 **difieren** si el IC 95 % pareado de la diferencia excluye 0
 ([informe §4.2](docs/informe/informe.md)).
+
+- **Test interno: DeiT-S es mejor.** Diferencia pareada del log10-MAE
+  (ResNet − DeiT) = 0,0163 [0,0119; 0,0193]; también excluye 0 en cada una de
+  las tres fuentes. Además es más rápido en CPU. Ambas redes superan con
+  holgura a todos los baselines.
+- **HazeRD (externo métrico): ambos fallan.** log10-MAE de 0,817 (ResNet-50) y
+  0,839 (DeiT-S), peor que predecir la media (0,429): las predicciones quedan
+  comprimidas en visibilidades bajas y subestiman.
+- **O-HAZE (niebla real, sin etiqueta):** en el 99 % de los pares la imagen
+  con niebla recibe menor V̂ que la limpia.
+- **Autos:** el detector deja de verlos antes de la MOR, por ejemplo a ~50 m
+  con MOR de 100 m y a ~71 m con MOR de 150 m (`cars_vdet.md`).
 
 Qué genera cada comando (todo en `reports/`, o en `$CAMANCHACA_REPORTS`):
 

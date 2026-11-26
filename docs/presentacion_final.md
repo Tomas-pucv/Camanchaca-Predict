@@ -7,7 +7,9 @@ respaldo de la demo).
 
 **Mensaje central (una frase):** "Estimamos la visibilidad MOR en metros con
 ResNet-50 y DeiT-S bajo un protocolo idéntico, con incertidumbre y pruebas de
-atajo; [COMPLETAR: resultado principal en una frase, con IC]."
+atajo; en el test interno DeiT-S tiene menor error que ResNet-50 (diferencia
+de log10-MAE 0,016, IC 95 % [0,012; 0,019]) y es más rápido en CPU, pero
+ninguno generaliza a HazeRD, donde ambos son peores que predecir la media."
 
 ## 1. Guion cronometrado
 
@@ -84,8 +86,15 @@ reportamos aparte las fuentes métricas: Foggy Cityscapes, CS-Fog y HazeRD.
 RESIDE < 75 m y Foggy ≥ 150 m. Lo atacamos con CS-Fog, que tiene las cuatro
 bandas en el mismo dominio, con selección por media de log10-MAE por fuente,
 con el baseline "media por fuente", con una sonda lineal de fuente y con un
-contrafactual de niebla uniforme. [COMPLETAR con los resultados de
-`probe_source.md` y `counterfactual.md`.]
+contrafactual de niebla uniforme. Resultado: la sonda identifica el dataset
+con 0,92 (ResNet-50) y 0,96 (DeiT-S) de exactitud balanceada, frente a 0,33
+de azar, así que el backbone sí codifica la fuente. Pero dentro de cada
+fuente las redes ordenan bien la visibilidad (Spearman 0,92–0,99), superan
+por lejos al baseline por fuente (0,046–0,062 frente a 0,251 de log10-MAE) y,
+al pasar a niebla uniforme, su predicción cambia ×1,38 y ×1,81: usan la
+estructura de la niebla según la distancia, no solo el contraste global. Donde
+sí aparece el atajo es fuera del dominio: en HazeRD ambas predicen
+visibilidades bajas para todo y quedan peor que la media.
 
 **¿Por qué no usaron AIR-VIEW, que tiene visibilidad medida?** Casi todas sus
 etiquetas superan 1,6 km (80 % son de 9–10+ millas), no cubre nuestras bandas

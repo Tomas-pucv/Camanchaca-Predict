@@ -4,7 +4,7 @@ subtitle: "Informe técnico final — Aprendizaje Automático II, PUCV 2026-2 (G
 author:
   - Tomás Ignacio Moraga
   - Nelson Mauricio Fuentes
-date: "Noviembre de 2026 (borrador del 3-nov-2026: resultados pendientes)"
+date: "Noviembre de 2026"
 lang: es
 bibliography: refs.bib
 link-citations: true
@@ -13,12 +13,11 @@ fontsize: 11pt
 ---
 
 <!--
-ESTADO: las secciones 1, 2, 3 y 5 están redactadas. La sección 4 contiene el
-diseño de resultados (tablas, figuras, hipótesis y reglas de decisión fijadas
-ANTES de ver los datos) con marcadores [COMPLETAR con reports/...] que se
-llenan desde las tablas generadas por `camanchaca report` tras la evaluación
-final en Colab. No escribir ninguna cifra que no salga de reports/.
-Presupuesto de páginas: ver docs/informe/README.md.
+ESTADO (26-nov-2026): secciones 1 a 5 redactadas. Las cifras de la sección 4
+salen de reports/ (evaluación final en Colab; ver reports/RESULTADOS.md). Las
+hipótesis y reglas de decisión de 4.2 se fijaron ANTES de ver los resultados y
+se aplican tal como están escritas. No escribir ninguna cifra que no salga de
+reports/. Presupuesto de páginas: ver docs/informe/README.md.
 -->
 
 # 1. Motivación
@@ -92,7 +91,7 @@ si no hay etiqueta.
 | O-HAZE [@ancuti2018ohaze] | **real** (máquina de niebla), pares | ninguna | — | externo: cualitativo + orden por pares |
 | Fotos propias (La Pólvora) | real / despejada | ninguna | — | externo cualitativo, demo |
 
-: Fuentes de datos. Conteos por split, fuente y banda: [COMPLETAR con reports/tables/data_counts.md].
+: Fuentes de datos. Conteos por split, fuente y banda en `reports/tables/data_counts.md`: 36.542 imágenes en 5.292 grupos; el conjunto externo tiene 75 imágenes de HazeRD y 90 de O-HAZE.
 
 **RESIDE-OTS.** Usamos el OTS oficial (2.061 escenas × 7 β × 5 A). El
 preprocesamiento verifica que los nombres sigan el patrón `id_A_beta` y aborta
@@ -236,7 +235,11 @@ Las cifras de esta sección salen de la evaluación final sobre:
 
 Ningún conjunto tiene **niebla real con visibilidad medida**, y no
 reportaremos precisión en niebla real como si la hubiera.
-[COMPLETAR con el estado final: fechas de corrida, commit, `reports/RESULTADOS.md`].
+La evaluación final se ejecutó una sola vez en Google Colab, con los
+splits congelados de `data/splits/v1` (sha256 de `test.csv` y `ext.csv` en el
+README). Las tablas y figuras están en `reports/RESULTADOS.md` y se
+versionaron el 25 y el 26-nov-2026 (commits `e5b8106`, notebooks 03–04, y
+`4352a36`, notebook 05).
 
 ## 4.2 Hipótesis y reglas de decisión (fijadas antes de ver los resultados)
 
@@ -269,17 +272,17 @@ reportaremos precisión en niebla real como si la hubiera.
 
 ## 4.3 Comparación principal
 
-| Modelo | log10-MAE macro | MdAPE | δ<1,25 | Spearman (por fuente) | macro-F1 (reg / CORN) | Falso-seguro | AUC-PR V<100 |
+| Modelo | log10-MAE [IC 95 %] | MdAPE (%) | δ<1,25 | Spearman | macro-F1 (reg / CORN) | Falso-seguro [IC 95 %] | AUC-PR V<100 |
 |---|---|---|---|---|---|---|---|
-| Media global / por fuente / banda mayoritaria | [COMPLETAR] | | | | | | |
-| Físico (Ridge / HGB) | [COMPLETAR] | | | | | | |
-| ResNet-50 (3 semillas) | [COMPLETAR] | | | | | | |
-| DeiT-S (3 semillas) | [COMPLETAR] | | | | | | |
-| Diferencia pareada ResNet − DeiT [IC 95 %] | [COMPLETAR con reports/tables/paired_test.md] | | | | | | |
+| Media global / por fuente / banda mayoritaria | 0,492 / 0,251 / 0,578 | 81,7 / 50,0 / 78,7 | 0,022 / 0,263 / 0,159 | — / 0,782 / — | 0,063 / 0,442 / 0,156 | 1 / 0,163 / 0 | 0,555 / 0,97 / 0,555 |
+| Físico (Ridge / HGB) | 0,210 / 0,137 | 38,9 / 21,3 | 0,274 / 0,510 | 0,865 / 0,921 | 0,588 / 0,736 | 0,088 / 0,039 | 0,967 / 0,984 |
+| ResNet-50 (3 semillas) | 0,0619 ± 0,0008 [0,0586; 0,0669] | 10,9 | 0,793 | 0,982 | 0,895 / 0,911 | 0,0086 [0,0049; 0,0124] | 1,000 |
+| DeiT-S (3 semillas) | 0,0456 ± 0,0007 [0,0401; 0,0535] | 6,5 | 0,866 | 0,986 | 0,915 / 0,929 | 0,0060 [0,0025; 0,0099] | 1,000 |
+| Diferencia pareada ResNet − DeiT [IC 95 %] | 0,0163 [0,0119; 0,0193] | | | | reg: −0,0207 [−0,0267; −0,0120] | 0,0026 [0,0006; 0,0051] | |
 
-: Test interno, media ± d.e. entre semillas e IC 95 % por bootstrap agrupado. [COMPLETAR con reports/tables/metrics_test.md].
+: Test interno (4.670 imágenes, 545 grupos). Media ± d.e. entre 3 semillas e IC 95 % por bootstrap agrupado (B = 2.000); los baselines tienen una sola corrida. log10-MAE y Spearman globales. Fuente: `reports/tables/metrics_test.md` y `paired_test.md`.
 
-Figuras previstas:
+Figuras:
 
 - dispersión log-log de V̂ vs V (`reports/figures/scatter_test.png`);
 - error por banda (`error_by_band_test.png`);
@@ -287,47 +290,99 @@ Figuras previstas:
 - desempeño por fuente (`per_source_test.png`);
 - curvas de aprendizaje (`learning_curves.png`).
 
-[COMPLETAR: 3–4 frases de lectura de la tabla, sin adjetivos que la tabla no
-respalde.]
+Ambas redes superan con holgura a todos los baselines: el mejor, el físico
+HGB, tiene un log10-MAE de 0,137, frente a 0,062 de ResNet-50 y 0,046 de
+DeiT-S. DeiT-S tiene menor error (error multiplicativo típico ×1,11 frente a
+×1,15), menor falso-seguro (0,60 % frente a 0,86 %) y mayor macro-F1 de
+bandas. El criterio de 4.2 es la media del log10-MAE por fuente; los reportes
+entregan el log10-MAE global y el de cada fuente, y **en los cuatro la
+diferencia pareada excluye 0** a favor de DeiT-S (§4.4). Según la regla, los
+modelos **difieren**. En términos absolutos la diferencia es pequeña: los dos
+tienen δ<1,25 sobre 0,79 y Spearman sobre 0,98.
 
 ## 4.4 Por fuente, por banda y externos
 
-[COMPLETAR con reports/tables/metrics_test.md (desglose por fuente y por
-`label_quality`) y reports/tables/metrics_ext.md (HazeRD)].
+**Por fuente (test).** DeiT-S tiene menor log10-MAE que ResNet-50 en las
+tres fuentes: CS-Fog 0,045 frente a 0,052, Foggy Cityscapes 0,020 frente a
+0,050 y RESIDE 0,064 frente a 0,075. Las diferencias pareadas excluyen 0 en
+las tres (CS-Fog 0,0068 [0,0027; 0,0088]; Foggy 0,0298 [0,0242; 0,0320];
+RESIDE 0,0113 [0,0075; 0,0149]) y en el subconjunto de etiqueta métrica
+(0,0206 [0,0159; 0,0224]). Dentro de cada fuente ambos ordenan bien la
+visibilidad (Spearman 0,99 en CS-Fog, 0,94 en Foggy y 0,92–0,94 en RESIDE),
+así que no se limitan a reconocer el dataset. **Por banda**
+(`error_by_band_test.png`), en la banda crítica los dos modelos tienen errores
+parecidos; la ventaja de DeiT-S se concentra en Precaución y Aceptable.
+
+**HazeRD (externo métrico, 75 imágenes de 15 escenas).** Ambos modelos
+fallan: log10-MAE 0,817 ± 0,023 (ResNet-50) y 0,839 ± 0,021 (DeiT-S), con
+error multiplicativo ×6,6 y ×6,9. Son peores que predecir la media (0,429) y
+que el baseline físico Ridge (0,422). Conservan parte del orden (Spearman
+0,60 y 0,61, frente a 0,90 del Ridge), pero casi todas sus predicciones
+quedan bajo 100 m para visibilidades reales de 38 a 766 m
+(`scatter_ext.png`): subestiman, y por eso el falso-seguro es 0. En HazeRD la
+diferencia pareada favorece a ResNet-50 (−0,0228 [−0,0434; −0,0033]).
+**H3 no se apoya:** con niebla densa (banda crítica) los dos modelos tienen
+errores parecidos, y entre datasets DeiT-S solo es mejor dentro de las
+fuentes de entrenamiento; en HazeRD el IC excluye 0 a favor de ResNet-50.
 Pares de O-HAZE en los que $\hat V(\text{con niebla}) < \hat V(\text{limpia})$:
-[COMPLETAR con reports/tables/ohaze_pairs.md].
+0,993 ± 0,013 de los 45 pares para ambos modelos (baseline físico: 0,956),
+con una razón media de −0,63 décadas (`ohaze_pairs.md`).
 Sensibilidad a ε = 0,02 (verdad y predicción se escalan por el mismo factor
 1,306, así que el log10-MAE no cambia y solo cambian las métricas de bandas):
-[COMPLETAR con reports/tables/eps_sensitivity_test.md].
-Galería de aciertos y errores, con V real y V̂ en metros, para ambos modelos:
-[COMPLETAR con figura].
+el macro-F1 baja de 0,895 a 0,806 (ResNet-50) y de 0,915 a 0,863 (DeiT-S), y
+el falso-seguro sube a 0,054 y 0,056. El orden entre modelos se mantiene
+(`eps_sensitivity_test.md`).
+Galería con V real y V̂ en metros para ambos modelos: los 16 ejemplos fijos
+de `reports/figures/interpret_examples_neg.png`.
 
 ## 4.5 Atajos e interpretabilidad
 
 | Prueba | ResNet-50 | DeiT-S | Lectura prevista |
 |---|---|---|---|
-| Sonda de fuente (exactitud balanceada vs azar) | [COMPLETAR] | [COMPLETAR] | ≫ azar: el backbone codifica el dataset |
-| Contrafactual: \|Δlog10 V̂\| medio y pendiente log10 V̂ vs log10 V (física / uniforme) | [COMPLETAR] | [COMPLETAR] | \|Δ\| < 0,05 y pendiente uniforme ≈ física: usa contraste global |
-| Atribución en tercil lejano + cielo (masa/área) | [COMPLETAR] | [COMPLETAR] | H1 |
-| Atribución en calzada / vehículos / edificios | [COMPLETAR] | [COMPLETAR] | qué región usa cada modelo |
+| Sonda de fuente (exactitud balanceada vs azar) | 0,92 (azar 0,33) | 0,96 (azar 0,33) | ≫ azar: el backbone codifica el dataset |
+| Contrafactual: \|Δlog10 V̂\| medio y pendiente log10 V̂ vs log10 V (física / uniforme) | 0,14; 0,985 / 1,10 | 0,257; 1,00 / 1,13 | \|Δ\| < 0,05 y pendiente uniforme ≈ física: usa contraste global |
+| Atribución −ŷ en tercil lejano / cielo / tercil cercano (masa/área) | 1,5 / 1,5 / 0,47 | 0,97 / 2,0 / 1,3 | H1 |
+| Atribución −ŷ en calzada / vehículos / edificios | 0,57 / 0,67 / 1,5 | 1,6 / 0,34 / 0,76 | qué región usa cada modelo |
 
-: Pruebas de atajo e interpretabilidad. [COMPLETAR con reports/tables/probe_source.md, counterfactual.md y attribution.md].
+: Pruebas de atajo e interpretabilidad. Sonda: 900 imágenes de val, k = 3 fuentes. Contrafactual: 200 pares de test, semilla 0. Atribución: 16 ejemplos fijos de test (7–8 por mapa), semilla 0. Fuente: `probe_source.md`, `counterfactual.md` y `attribution.md`.
 
-Figura prevista: Grad-CAM de ambos modelos y rollout de DeiT sobre los
+**H1 no se apoya.** El mapa −ŷ de ResNet-50 se concentra más en el tercil
+lejano (razón 1,5) que el de DeiT-S (0,97). DeiT-S solo pone más peso relativo
+en el cielo (2,0 frente a 1,5), que ocupa ~2 % del área, y en la calzada
+(1,6). Con 7–8 imágenes por mapa, la evidencia es débil. **H2 no se apoya con
+la regla de 4.2.** Al pasar a niebla uniforme la predicción cambia en
+promedio ×1,38 (ResNet-50) y ×1,81 (DeiT-S), por encima del umbral de 0,05
+décadas. La sonda identifica la fuente muy por encima del azar, pero el
+baseline por fuente (0,251) queda lejos de las redes. Ambos modelos usan la
+atenuación según la distancia, DeiT-S más que ResNet-50; aun así, con niebla
+uniforme siguen ordenando bien (Spearman 0,975 y 0,911), así que también
+usan el contraste global.
+
+Figura: Grad-CAM de ambos modelos y rollout de DeiT sobre los
 mismos ejemplos (`reports/figures/interpret_examples_neg.png`).
 
 ## 4.6 Autos: detectabilidad frente a distancia
 
-[COMPLETAR con reports/tables/cars_recall.md, cars_vdet.md y
-reports/figures/cars_recall_vs_distance.png]. Con β = 0,005 y 0,01 (MOR de
-600 y 300 m), se espera que $V_{det}$ quede censurada por encima del rango de
-los bins (hasta 150 m), donde la distancia estéreo es poco precisa. La
-comparación informativa es con β = 0,02 y con CS-Fog a 50 y 100 m.
+Con 475 frames de Cityscapes val × 6 condiciones (3.904 autos GT), el
+detector deja de ver autos bastante antes de la visibilidad MOR
+(`cars_vdet.md`, `cars_recall_vs_distance.png`): $V_{det}$ = 115 m
+[97; 120] con MOR de 300 m (β = 0,01), 71 m [63; 74] con 150 m (β = 0,02),
+50 m [47; 51] con 100 m y 33 m [32; 35] con 50 m (CS-Fog). La razón
+$V_{det}$/MOR va de 0,39 a 0,66: la MOR describe un objeto negro grande y
+contrastado, y un auto real es más chico y de menor contraste. Con la SSD de
+§1, la velocidad cuya distancia de detención cabe en $V_{det}$ es de 79, 57,
+44 y 33 km/h, frente a 143, 93, 72 y 44 km/h si se usara la MOR. Se esperaba
+que $V_{det}$ quedara censurada por encima del rango de los bins (hasta
+150 m) con β = 0,005 y 0,01; ocurrió solo con β = 0,005 (> 145 m).
 
 ## 4.7 Velocidad vs precisión
 
-[COMPLETAR con reports/tables/latency.md y
-reports/figures/pareto_speed_accuracy.png] y aplicar la regla de 4.2.
+En CPU (fp32, lote 1) DeiT-S tarda 29,9 ms por imagen y ResNet-50, 54,7 ms;
+en GPU (fp16, lote 1), 5,1 y 7,6 ms. Con lote 64 en GPU procesan 2.740 y
+1.445 imágenes/s (`latency.md`). Aplicando la regla de 4.2: DeiT-S tiene
+menor log10-MAE (sus IC no se solapan) y menor falso-seguro (IC solapados), y
+además es más rápido en CPU. **Se elige DeiT-S**
+(`pareto_speed_accuracy.png`).
 
 ## 4.8 Por qué ResNet y ViT difieren (o no)
 
@@ -353,9 +408,24 @@ Interpretamos el resultado con el siguiente marco, definido de antemano:
    por ejemplo en RESIDE con etiqueta equivalente, pesa menos que una en las
    fuentes métricas.
 
-[COMPLETAR: 1 párrafo que aplique el marco a los resultados. Si el IC incluye
-0, decir explícitamente "no encontramos diferencia" y explicar por qué es
-plausible.]
+**Aplicación del marco.** En la distribución de entrenamiento DeiT-S es
+mejor, y la diferencia excluye 0 en las tres fuentes, también en las de
+etiqueta métrica, así que no depende de RESIDE (punto 4). La ventaja de
+eficiencia de datos de la CNN que anticipaba el punto 2 no apareció: con la
+misma receta y los mismos datos, el ViT preentrenado en IN-1k aprendió mejor.
+Sobre el punto 1, el contrafactual sugiere un mecanismo: DeiT-S es más
+sensible a la estructura de la niebla según la distancia (×1,81 frente a
+×1,38), algo consistente con que la atención global integre la atenuación en
+toda la imagen. La atribución por terciles, en cambio, no muestra más
+atención lejana en DeiT-S (H1 no se apoya). El punto 3 limita el alcance: las
+redes superan por lejos a los baselines en el test interno, pero la sonda
+muestra que codifican el dataset, y en HazeRD ambas caen por debajo de la
+media, con ResNet-50 apenas menos mal. Concluimos que DeiT-S es mejor **en
+niebla sintética del mismo dominio**; fuera de él, el problema tal como lo
+definen estos datos no discrimina entre arquitecturas, porque ambas fallan.
+Una salvedad: el LR elegido para ResNet-50 quedó en el borde de la grilla
+(3 × 10⁻⁴, con el mejor paso en el último del barrido), por lo que ResNet-50
+podría estar algo subajustada.
 
 # 5. Trabajo futuro
 
@@ -386,7 +456,9 @@ plausible.]
   la camanchaca no lo es.
 - **Sin validación con visibilidad medida** en niebla real.
 - **RESIDE aporta visibilidad equivalente**, no metros.
-- **HazeRD** tiene 14–15 escenas y una convención de umbral por confirmar.
+- **HazeRD** tiene 15 escenas y una convención de umbral por confirmar.
+- **Fuera del dominio de entrenamiento los modelos no sirven:** en HazeRD son
+  peores que predecir la media y subestiman la visibilidad.
 - **Etiquetas en los bordes de banda:** RESIDE β = 0,06 → 49,9 m.
 - **Confusión dataset ↔ banda** en las fuentes oficiales. Se mitiga con
   CS-Fog, pero no se elimina por completo, porque RESIDE sigue siendo < 75 m.
