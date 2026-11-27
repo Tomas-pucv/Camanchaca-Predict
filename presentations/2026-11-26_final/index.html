@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Camanchaca-Predict</title>
+
+<!-- Tipografías locales (assets/fonts, licencia OFL): funcionan sin internet -->
+<style>
+@font-face { font-family: 'Barlow'; src: url('assets/fonts/Barlow-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Barlow'; src: url('assets/fonts/Barlow-Italic.ttf') format('truetype'); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: 'Barlow'; src: url('assets/fonts/Barlow-Medium.ttf') format('truetype'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Barlow'; src: url('assets/fonts/Barlow-SemiBold.ttf') format('truetype'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Barlow'; src: url('assets/fonts/Barlow-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url('assets/fonts/BarlowCondensed-Medium.ttf') format('truetype'); font-weight: 500; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url('assets/fonts/BarlowCondensed-SemiBold.ttf') format('truetype'); font-weight: 600; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url('assets/fonts/BarlowCondensed-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+@font-face { font-family: 'Barlow Condensed'; src: url('assets/fonts/BarlowCondensed-ExtraBold.ttf') format('truetype'); font-weight: 800; font-display: swap; }
+</style>
+
+<!--
+  Navegación: flechas, espacio, PgUp/PgDn, Inicio/Fin. index.html#08 abre la lámina 8; #A1 el anexo.
+  N: notas del orador. E: editar texto (Ctrl+S descarga el HTML editado). F: pantalla completa.
+  Pendientes: buscar "[COMPLETAR]" (lista en PENDIENTES.md).
+-->
+
+<style>
+/* ===========================================
+   1. TEMA
+   =========================================== */
+:root {
+    --fog-1: #E9EDEC;
+    --fog-2: #DCE2E1;
+    --fog-3: #CED6D5;
+    --haze: #F4F6F5;
+    --ink: #13232E;
+    --ink-soft: #52626A;
+    --ink-faint: rgba(19, 35, 46, 0.14);
+
+    --crit: #D6402B;
+    --alto: #EE8A2F;
+    --prec: #E2BE3C;
+    --prec-ink: #93740F;
+    --ok: #5E8C76;
+
+    --resnet: #2A78D6;
+    --deit: #EE6A33;
+
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+
+    --stage-bg: #BFC8C8;
+    --slide-bg: transparent;
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   2. VIEWPORT BASE (viewport-base.css íntegro)
+   =========================================== */
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+/* ===========================================
+   3. ESCENARIO: niebla en capas
+   =========================================== */
+.deck-stage {
+    background: linear-gradient(180deg, var(--fog-1) 0%, var(--fog-2) 55%, var(--fog-3) 100%);
+    color: var(--ink);
+    font-family: var(--font-body);
+}
+.fogbank {
+    position: absolute;
+    inset: -220px;
+    pointer-events: none;
+    z-index: 0;
+}
+.fogbank.f1 {
+    background:
+        radial-gradient(60% 35% at 28% 38%, rgba(255,255,255,.70), transparent 70%),
+        radial-gradient(45% 30% at 82% 72%, rgba(255,255,255,.55), transparent 70%);
+    animation: drift 28s ease-in-out infinite alternate;
+}
+.fogbank.f2 {
+    background:
+        radial-gradient(50% 25% at 66% 28%, rgba(255,255,255,.50), transparent 70%),
+        radial-gradient(40% 30% at 12% 86%, rgba(255,255,255,.45), transparent 70%);
+    animation: drift 36s ease-in-out infinite alternate-reverse;
+}
+@keyframes drift {
+    from { transform: translateX(-90px); }
+    to   { transform: translateX(90px); }
+}
+/* Franja con los colores de las bandas al pie */
+.stage-ruler {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 8px;
+    display: flex;
+    z-index: 2;
+}
+.stage-ruler i { display: block; height: 100%; }
+
+/* ===========================================
+   4. ESTRUCTURA DE LÁMINA
+   =========================================== */
+.slide { z-index: 1; }
+.inner {
+    position: absolute;
+    left: 112px; right: 112px;
+    top: 96px; bottom: 84px;
+    display: flex;
+    flex-direction: column;
+}
+.h2 {
+    font: 700 84px/0.98 var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -.005em;
+    max-width: 1640px;
+}
+.h2 .soft { color: var(--ink-soft); }
+.nocase { text-transform: none; }      /* β y ε no deben pasar a Β y Ε */
+.note { font-size: 25px; line-height: 1.35; color: var(--ink-soft); }
+
+.lead { font: 400 36px/1.35 var(--font-body); }
+.lead b, .pts b { font-weight: 600; }
+
+/* Viñetas (máx. 3) */
+.pts { list-style: none; display: flex; flex-direction: column; gap: 28px; }
+.pts li {
+    position: relative;
+    padding-left: 40px;
+    font-size: 34px;
+    line-height: 1.32;
+}
+.pts li::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 15px;
+    width: 18px; height: 18px;
+    background: var(--ink);
+}
+.pts li.c-crit::before { background: var(--crit); }
+.pts li.c-alto::before { background: var(--alto); }
+.pts li.c-ok::before   { background: var(--ok); }
+
+.card {
+    background: rgba(244, 246, 245, .80);
+    border: 1px solid var(--ink-faint);
+    padding: 30px 34px;
+}
+.card h3 {
+    font: 700 36px/1.1 var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    margin-bottom: 14px;
+}
+.card p { font-size: 30px; line-height: 1.35; }
+
+/* Figuras */
+.fig {
+    background: #FCFCFB;
+    border: 1px solid var(--ink-faint);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.fig img { display: block; width: 100%; height: auto; }
+.fig figcaption { font-size: 23px; line-height: 1.3; color: var(--ink-soft); }
+/* Gráficos propios (fondo transparente): sin marco, directo sobre la niebla */
+.fig.chart { background: none; border: 0; padding: 0; gap: 14px; }
+
+/* Transición suave entre láminas */
+.slide { transition: opacity .4s ease, visibility 0s linear .4s; }
+.slide.visible { transition: opacity .4s ease, visibility 0s linear 0s; }
+
+/* 05: tabla más grande y barra de reparto train / val / test */
+table.data.big { font-size: 32px; }
+table.data.big th { font-size: 26px; }
+.split { margin-top: 40px; }
+.split .bar { display: flex; height: 58px; }
+.split .bar i { display: flex; align-items: center; padding-left: 16px; font: 600 26px var(--font-body); font-style: normal; color: #fff; white-space: nowrap; overflow: hidden; }
+.split .lbl { display: flex; justify-content: space-between; margin-top: 10px; font-size: 24px; color: var(--ink-soft); }
+
+/* 14: franja de foto al pie, que aparece desde la niebla */
+.s-close .photo-band {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 470px;
+    background: url("assets/foto_puerto_niebla.jpg") center 96% / cover no-repeat;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 55%, #000 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,.85) 55%, #000 100%);
+}
+.s-close .photo-veil {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 470px;
+    background: linear-gradient(90deg, rgba(233,237,236,.88) 0%, rgba(233,237,236,.55) 38%, rgba(233,237,236,0) 70%);
+}
+.s-close .inner { z-index: 1; }
+
+.stat .num { font: 800 132px/0.9 var(--font-display); letter-spacing: -.01em; }
+.stat .lbl { font: 500 27px/1.3 var(--font-body); color: var(--ink-soft); margin-top: 8px; }
+
+/* Nombre de modelo con el color de las figuras */
+.m { white-space: nowrap; font-weight: 600; }
+.m::before {
+    content: "";
+    display: inline-block;
+    width: .62em; height: .62em;
+    border-radius: 50%;
+    margin-right: .3em;
+    vertical-align: .04em;
+}
+.m.resnet::before { background: var(--resnet); }
+.m.deit::before   { background: var(--deit); }
+.m.base::before   { background: transparent; border: 2px solid var(--ink-soft); }
+
+/* Tablas */
+table.data { border-collapse: collapse; width: 100%; font-size: 28px; font-variant-numeric: tabular-nums; }
+table.data th {
+    font: 600 24px/1.2 var(--font-display);
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    text-align: right;
+    padding: 0 16px 12px;
+    border-bottom: 2px solid var(--ink);
+    vertical-align: bottom;
+}
+table.data th:first-child, table.data td:first-child { text-align: left; padding-left: 0; }
+table.data td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--ink-faint);
+    text-align: right;
+    white-space: nowrap;
+}
+table.data tr.best td { background: rgba(238, 106, 51, .08); }
+table.data td .ci { color: var(--ink-soft); font-size: 24px; }
+table.data tr.muted td, table.data td.muted { color: var(--ink-soft); }
+
+/* Contenido pendiente (se reemplaza; ver PENDIENTES.md) */
+.pending {
+    border: 3px dashed var(--ink-soft);
+    background:
+        repeating-linear-gradient(-45deg, rgba(19,35,46,.035) 0 18px, transparent 18px 36px),
+        rgba(244, 246, 245, .55);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 30px 36px;
+}
+.pending .tag { font: 600 22px var(--font-display); letter-spacing: .08em; color: #fff; background: var(--crit); padding: 4px 12px; }
+.pending .what { font: 600 32px/1.25 var(--font-display); letter-spacing: .01em; }
+.pending code { font: 400 22px/1.3 var(--font-body); color: var(--ink-soft); }
+.pending-inline { font-size: .85em; color: var(--crit); border-bottom: 2px dashed var(--crit); }
+.review { text-decoration: underline dotted var(--crit) 3px; text-underline-offset: 8px; }
+
+/* ===========================================
+   5. ANIMACIONES DE ENTRADA
+   =========================================== */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition: opacity .7s var(--ease-out-expo), transform .7s var(--ease-out-expo);
+    transition-delay: var(--d, .1s);
+}
+.slide.visible .reveal { opacity: 1; transform: none; }
+.grow { transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease-out-expo); transition-delay: var(--d, .3s); }
+.slide.visible .grow { transform: scaleX(1); }
+.photo-in { opacity: 0; transform: scale(1.04); transition: opacity 1.6s ease, transform 6s ease-out; }
+.slide.visible .photo-in { opacity: 1; transform: scale(1); }
+
+/* ===========================================
+   6. PORTADA: foto del puerto en niebla + título que se desvanece
+   =========================================== */
+.s-title .photo {
+    position: absolute; inset: 0;
+    background: url("assets/foto_puerto_niebla.jpg") center 42% / cover no-repeat;
+}
+.s-title .veil {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg,
+        rgba(233,237,236,.95) 0%, rgba(233,237,236,.88) 34%,
+        rgba(233,237,236,.45) 58%, rgba(233,237,236,.08) 82%, rgba(233,237,236,0) 100%);
+}
+.s-title .fogbank { opacity: .55; }
+.s-title .place {
+    position: absolute; left: 112px; top: 196px;
+    font: 600 34px var(--font-display);
+    letter-spacing: .14em; text-transform: uppercase; color: var(--crit);
+}
+.kosch {
+    position: absolute; left: 104px; top: 236px;
+    font: 800 262px/.86 var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: -.01em;
+    white-space: nowrap;
+}
+.kosch span {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(18px);
+    transition: opacity 1.4s var(--ease-out-expo), filter 1.4s var(--ease-out-expo);
+}
+.slide.visible .kosch span { opacity: var(--c); filter: blur(var(--b)); }
+.kosch .p2 { display: block; font-size: 146px; font-weight: 600; letter-spacing: .02em; color: var(--ink-soft); }
+.s-title .msg {
+    position: absolute; left: 112px; top: 640px; width: 1020px;
+    font: 400 34px/1.38 var(--font-body);
+}
+.s-title .msg b { font-weight: 600; }
+.s-title .meta {
+    position: absolute; left: 112px; bottom: 64px;
+    font-size: 28px; line-height: 1.45;
+}
+.s-title .meta span { color: var(--ink-soft); }
+
+/* ===========================================
+   7. COMPONENTES POR LÁMINA
+   =========================================== */
+/* 02: fotos + distancia de detención */
+.photos { position: relative; height: 660px; }
+.photos .ph-main { position: absolute; left: 0; top: 0; width: 720px; height: auto; display: block; box-shadow: 0 18px 40px rgba(19,35,46,.18); }
+.photos .ph-inset {
+    position: absolute; right: 0; bottom: 0; width: 380px;
+    background: #FCFCFB; padding: 10px 10px 8px;
+    box-shadow: 0 18px 40px rgba(19,35,46,.25);
+}
+.photos .ph-inset img { display: block; width: 100%; height: auto; }
+.photos .ph-inset span, .photos .ph-tag { display: block; font: 600 24px var(--font-display); letter-spacing: .06em; text-transform: uppercase; margin-top: 6px; }
+.photos .ph-tag { position: absolute; left: 0; top: 556px; margin: 0; }
+.road { position: relative; height: 230px; }
+.road .axis { position: absolute; left: 0; right: 0; top: 150px; height: 4px; background: var(--ink); }
+.road .car { position: absolute; left: 0; top: 106px; width: 86px; height: 44px; background: var(--ink); border-radius: 10px 22px 6px 6px; }
+.road .mk { position: absolute; top: 40px; transform: translateX(-50%); text-align: center; }
+.road .mk .stem { width: 3px; height: 60px; margin: 0 auto; background: var(--crit); }
+.road .mk .v { font: 700 42px var(--font-display); }
+.road .mk.m60 .stem { background: var(--alto); }
+.road .tick { position: absolute; top: 166px; transform: translateX(-50%); font-size: 24px; color: var(--ink-soft); white-space: nowrap; }
+
+/* Rótulo pequeño en mayúsculas (lámina 04, sobre las bandas) */
+.sd-title { font: 600 26px var(--font-display); letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft); margin-bottom: 10px; }
+
+/* 03: antes / ahora */
+.change { display: grid; grid-template-columns: 300px 1fr 1fr; column-gap: 40px; }
+.change > div { padding: 28px 0; border-bottom: 1px solid var(--ink-faint); font-size: 31px; line-height: 1.32; }
+.change .head { font: 600 26px var(--font-display); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); padding-top: 0; border-bottom: 2px solid var(--ink); }
+.change .topic { font: 700 38px/1.1 var(--font-display); text-transform: uppercase; }
+.change .before { color: var(--ink-soft); }
+.change .after b { font-weight: 600; }
+
+/* 04: curva de contraste */
+.curve svg { width: 100%; height: auto; overflow: visible; }
+.curve text { font-family: var(--font-body); font-size: 24px; fill: var(--ink-soft); }
+.curve .big { font-family: var(--font-display); font-size: 36px; font-weight: 700; fill: var(--ink); }
+.bands4 { display: grid; grid-template-columns: repeat(4, 1fr); }
+.bands4 > div { padding-top: 12px; border-top: 12px solid var(--c); }
+.bands4 .b { font: 700 32px var(--font-display); text-transform: uppercase; }
+.bands4 .s { font-size: 25px; color: var(--ink-soft); }
+
+/* 06: barras por fuente */
+.stack { display: grid; grid-template-columns: 290px 1fr 200px; align-items: center; row-gap: 26px; column-gap: 28px; }
+.stack .name { font: 700 36px/1.05 var(--font-display); text-transform: uppercase; }
+.stack .name small { display: block; font: 400 22px var(--font-body); text-transform: none; color: var(--ink-soft); margin-top: 4px; }
+.stack .bar { display: flex; height: 76px; }
+.stack .bar i { display: flex; align-items: center; justify-content: center; height: 100%; font: 600 24px var(--font-body); color: #fff; font-style: normal; overflow: hidden; }
+.stack .bar i.p { color: var(--ink); }
+.stack .rng { font: 500 26px/1.25 var(--font-body); color: var(--ink-soft); }
+.legend { display: flex; gap: 34px; font: 600 23px var(--font-display); letter-spacing: .08em; text-transform: uppercase; }
+.legend span::before { content: ""; display: inline-block; width: 18px; height: 18px; margin-right: 10px; vertical-align: -2px; background: var(--c); }
+
+/* 07: tarjetas de modelo */
+.model-card { border-top: 8px solid var(--c); }
+.model-card .id { font-size: 22px; color: var(--ink-soft); margin-bottom: 16px; }
+.model-card .kv { display: flex; gap: 38px; margin-top: 10px; }
+.model-card .kv div { font-size: 23px; color: var(--ink-soft); }
+.model-card .kv b { display: block; font: 700 56px var(--font-display); color: var(--ink); }
+.proto { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.proto li { font-size: 28px; line-height: 1.3; padding-left: 28px; position: relative; }
+.proto li::before { content: ""; position: absolute; left: 0; top: 14px; width: 12px; height: 12px; background: var(--ink); }
+
+/* 08 / 12: recuadro de decisión */
+.decision { border-left: 8px solid var(--deit); background: rgba(244, 246, 245, .85); padding: 22px 30px; }
+.decision .t { font: 700 32px var(--font-display); text-transform: uppercase; letter-spacing: .03em; }
+.decision p { font-size: 28px; line-height: 1.36; margin-top: 6px; font-variant-numeric: tabular-nums; }
+
+/* 10: interpretabilidad */
+.interp-head { display: grid; grid-template-columns: repeat(4, 1fr); font: 600 22px/1.15 var(--font-display); letter-spacing: .04em; text-transform: uppercase; color: var(--ink-soft); text-align: center; padding: 0 6px; }
+.hyp { display: flex; flex-direction: column; gap: 36px; }
+.hyp .h { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start; }
+.hyp .h .k { font: 800 50px/1 var(--font-display); color: var(--crit); }
+.hyp .h .q { font: 700 34px/1.15 var(--font-display); text-transform: uppercase; letter-spacing: .02em; }
+.hyp .h p { font-size: 29px; line-height: 1.34; margin-top: 6px; }
+
+/* 13: pasos de la demo */
+.steps { counter-reset: st; display: flex; flex-direction: column; gap: 28px; }
+.steps li { list-style: none; counter-increment: st; display: grid; grid-template-columns: 64px 1fr; gap: 18px; font-size: 33px; line-height: 1.3; }
+.steps li::before { content: counter(st); font: 800 56px/1 var(--font-display); color: var(--crit); }
+.demo-shot { display: block; border: 1px solid var(--ink-faint); box-shadow: 0 18px 40px rgba(19,35,46,.22); }
+.demo-shot img { display: block; width: 100%; height: auto; }
+.demo-link { font: 600 30px var(--font-body); color: var(--ink); text-decoration: underline; text-decoration-color: var(--crit); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.demo-link::after { content: " ↗"; color: var(--crit); }
+
+/* 14: tres columnas */
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 34px; }
+.cols3 .card { border-top: 8px solid var(--c); }
+.cols3 .card ul { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.cols3 .card li { font-size: 29px; line-height: 1.32; padding-left: 22px; position: relative; }
+.cols3 .card li::before { content: ""; position: absolute; left: 0; top: 15px; width: 9px; height: 9px; background: var(--c); }
+
+/* Anexo */
+.qa { font: 700 68px/1 var(--font-display); text-transform: uppercase; }
+.answer { font-size: 32px; line-height: 1.38; }
+.answer b { font-weight: 600; }
+.s-annex .card p { font-size: 30px; }
+
+/* ===========================================
+   8. NOTAS Y EDICIÓN (fuera del escenario, ocultas por defecto)
+   =========================================== */
+.notes-panel {
+    position: fixed; right: 16px; bottom: 16px; z-index: 1002;
+    width: min(560px, 92vw); max-height: 46vh; overflow: auto;
+    background: rgba(19, 35, 46, .94); color: #EEF2F1;
+    font: 400 16px/1.45 var(--font-body);
+    padding: 16px 18px; border-left: 4px solid var(--crit);
+    display: none;
+}
+.notes-panel.show { display: block; }
+.notes-panel .who { font: 600 14px var(--font-body); letter-spacing: .04em; color: #F7B39E; margin-bottom: 6px; }
+.slide aside.notes { display: none; }
+
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle {
+    position: fixed; top: 14px; left: 14px; z-index: 10001;
+    font: 600 14px var(--font-body); padding: 8px 12px;
+    background: var(--ink); color: #fff; border: 0; cursor: pointer;
+    opacity: 0; pointer-events: none; transition: opacity .3s ease;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-toggle.active { background: var(--crit); }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(214, 64, 43, .55); outline-offset: 4px; }
+.restore-bar {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%); z-index: 10002;
+    background: var(--ink); color: #fff; font: 500 15px var(--font-body);
+    padding: 10px 14px; display: none; gap: 10px; align-items: center;
+}
+.restore-bar.show { display: flex; }
+.restore-bar button { font: 600 14px var(--font-body); padding: 4px 10px; border: 0; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage" aria-live="polite">
+
+    <div class="fogbank f1" aria-hidden="true"></div>
+    <div class="fogbank f2" aria-hidden="true"></div>
+    <div class="stage-ruler" aria-hidden="true">
+        <i style="width:16%;background:var(--crit)"></i><i style="width:20%;background:var(--alto)"></i><i style="width:34%;background:var(--prec)"></i><i style="width:30%;background:var(--ok)"></i>
+    </div>
+
+    <!-- 01 · PORTADA -->
+    <section class="slide s-title" data-label="01">
+        <div class="photo photo-in" aria-hidden="true"></div>
+        <div class="veil" aria-hidden="true"></div>
+        <div class="fogbank f1" aria-hidden="true"></div>
+        <div class="place reveal" style="--d:.05s">Camino La Pólvora, Valparaíso</div>
+        <h1 class="kosch" id="koschTitle" aria-label="Camanchaca Predict"></h1>
+        <p class="msg reveal" style="--d:.9s">Estimamos cuántos metros se ve en la niebla a partir de una sola imagen, y comparamos <b>ResNet-50</b> con <b>DeiT-S</b> en igualdad de condiciones.</p>
+        <div class="meta reveal" style="--d:1.2s">Tomás Moraga<br>Nelson Fuentes<br>Fernando Guerrero</div>
+        <aside class="notes" data-speaker="Por asignar" data-time="0:20">Nombre, equipo y la pregunta del proyecto: cuántos metros se ve en la niebla, a partir de una foto.</aside>
+    </section>
+
+    <!-- 02 · PROBLEMA -->
+    <section class="slide" data-label="02">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">¿Cuántos metros se ve?</h2>
+            <div style="display:grid;grid-template-columns:780px 1fr;gap:72px;margin-top:40px;flex:1;min-height:0">
+                <div class="photos">
+                    <img class="ph-main photo-in" src="assets/foto_camanchaca_valparaiso.jpg" alt="Camanchaca entrando sobre la bahía de Valparaíso, vista aérea">
+                    <div class="ph-tag reveal" style="--d:.5s">Camanchaca en Valparaíso</div>
+                    <figure class="ph-inset reveal" style="--d:.7s">
+                        <img src="assets/foto_la_polvora.jpg" alt="Viaducto del Camino La Pólvora junto a la costa">
+                        <span>Camino La Pólvora</span>
+                    </figure>
+                </div>
+                <div style="display:flex;flex-direction:column;justify-content:center;gap:64px;padding-bottom:60px">
+                    <ul class="pts">
+                        <li class="c-crit reveal" style="--d:.3s">La camanchaca entra desde el mar y puede bajar la visibilidad a <b>decenas de metros</b>.</li>
+                        <li class="c-alto reveal" style="--d:.4s">Si veo menos que lo que necesito para frenar, <b>no alcanzo a detenerme</b>.</li>
+                    </ul>
+                    <div class="reveal" style="--d:.6s">
+                        <p class="note" style="margin-bottom:14px">Distancia para detenerse, con pavimento mojado</p>
+                        <div class="road">
+                            <div class="car"></div>
+                            <div class="axis"></div>
+                            <div class="mk m60" style="left:38.5%"><div class="v">77 m</div><div class="stem"></div></div>
+                            <div class="mk" style="left:59.3%"><div class="v">119 m</div><div class="stem"></div></div>
+                            <div class="mk" style="left:83.9%"><div class="v">168 m</div><div class="stem"></div></div>
+                            <div class="tick" style="left:38.5%">60 km/h</div>
+                            <div class="tick" style="left:59.3%">80 km/h</div>
+                            <div class="tick" style="left:83.9%">100 km/h</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:10">Distancia de detención con reacción de 2,5 s y μ = 0,4 (AASHTO): 60 km/h ≈ 77 m, 80 ≈ 119 m, 100 ≈ 168 m. Cerrar con la pregunta: ¿cuántos metros veo?</aside>
+    </section>
+
+    <!-- 03 · QUÉ CAMBIÓ DESDE EL AVANCE -->
+    <section class="slide" data-label="03">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Qué cambió desde el avance</h2>
+            <div class="change" style="margin-top:64px">
+                <div class="head reveal" style="--d:.2s"></div>
+                <div class="head reveal" style="--d:.2s">Avance</div>
+                <div class="head reveal" style="--d:.2s">Ahora</div>
+
+                <div class="topic reveal" style="--d:.3s">Datos</div>
+                <div class="before reveal" style="--d:.3s">Niebla sintética sin metros reales</div>
+                <div class="after reveal" style="--d:.3s"><b>Visibilidad en metros</b> con Foggy Cityscapes, HazeRD y CS-Fog, una niebla que generamos nosotros</div>
+
+                <div class="topic reveal" style="--d:.42s">Modelos</div>
+                <div class="before reveal" style="--d:.42s">ViT-B de 87 M contra ResNet de 25 M</div>
+                <div class="after reveal" style="--d:.42s"><b>Tamaño parecido</b>: DeiT-S (21,7 M) y ResNet-50 (23,5 M), entrenados igual</div>
+
+                <div class="topic reveal" style="--d:.54s">Evaluación</div>
+                <div class="before reveal" style="--d:.54s">Un número final por modelo</div>
+                <div class="after reveal" style="--d:.54s"><b>Intervalos de confianza</b>, 3 semillas, comparación con modelos simples y mapas de atención</div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="0:40">Tres cambios: datos con etiqueta métrica, comparación justa e incertidumbre con baselines e interpretabilidad. También pasamos de ε = 0,02 a 0,05 (lámina siguiente).</aside>
+    </section>
+
+    <!-- 04 · ETIQUETA -->
+    <section class="slide" data-label="04">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">De <span class="nocase">β</span> a metros de visibilidad</h2>
+            <div style="display:grid;grid-template-columns:860px 1fr;gap:70px;margin-top:40px">
+                <div class="curve reveal" style="--d:.25s">
+                    <svg viewBox="0 0 860 430" role="img" aria-label="Contraste exp(-beta d) para beta 0,02 por metro: cae al 5 % a 150 m y al 2 % a 196 m">
+                        <line x1="70" y1="360" x2="840" y2="360" stroke="#13232E" stroke-width="2"/>
+                        <line x1="70" y1="20" x2="70" y2="360" stroke="#13232E" stroke-width="2"/>
+                        <path id="ccPath" fill="none" stroke="#13232E" stroke-width="5"/>
+                        <line x1="455" y1="340" x2="455" y2="360" stroke="#D6402B" stroke-width="4"/>
+                        <line x1="455" y1="70" x2="455" y2="340" stroke="#D6402B" stroke-width="3" stroke-dasharray="8 8"/>
+                        <line x1="572" y1="70" x2="572" y2="352" stroke="#52626A" stroke-width="3" stroke-dasharray="4 8"/>
+                        <text x="445" y="98" class="big" style="fill:#D6402B" text-anchor="end">150 m</text>
+                        <text x="445" y="128" text-anchor="end">contraste 5 %</text>
+                        <text x="582" y="98" class="big" style="fill:#52626A">196 m</text>
+                        <text x="582" y="128">contraste 2 %</text>
+                        <text x="62" y="398">0</text><text x="190" y="398">50</text><text x="312" y="398">100</text><text x="568" y="398">200</text><text x="790" y="398">300 m</text>
+                        <text x="0" y="30">100 %</text><text x="92" y="346">β = 0,02 por metro</text>
+                        <text x="320" y="430" style="font-size:23px">contraste de un objeto según su distancia</text>
+                    </svg>
+                </div>
+                <ul class="pts" style="padding-top:10px">
+                    <li class="reveal" style="--d:.35s"><b>V = 2,996 / β</b>: la distancia donde el contraste cae al 5 %, según la OMM.</li>
+                    <li class="c-crit reveal" style="--d:.45s">En el avance usamos 2 %. Eso da una visibilidad <b>31 % mayor</b>, más optimista de lo que es.</li>
+                    <li class="c-ok reveal" style="--d:.55s">En Cityscapes y HazeRD son <b>metros reales</b>. En RESIDE son <b>equivalentes</b>, porque su profundidad es estimada.</li>
+                </ul>
+            </div>
+            <div class="reveal" style="--d:.7s;margin-top:auto">
+                <p class="sd-title">Bandas y velocidad máxima para alcanzar a frenar</p>
+                <div class="bands4">
+                    <div style="--c:var(--crit)"><div class="b">Crítico, menos de 50 m</div><div class="s">menos de 44 km/h</div></div>
+                    <div style="--c:var(--alto)"><div class="b">Alto riesgo, 50 a 100 m</div><div class="s">44 a 71 km/h</div></div>
+                    <div style="--c:var(--prec)"><div class="b">Precaución, 100 a 200 m</div><div class="s">71 a 111 km/h</div></div>
+                    <div style="--c:var(--ok)"><div class="b">Aceptable, 200 m o más</div><div class="s">más de 111 km/h</div></div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:00">V = 2,996/β (MOR, OMM). ε = 0,02 sobreestimaba V en ~31 %. Bandas 50/100/200 m con velocidad segura ≈ 44/71/111 km/h (ilustrativa). Visibilidad equivalente vs métrica.</aside>
+    </section>
+
+    <!-- 05 · DATOS -->
+    <section class="slide" data-label="05">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">36 542 imágenes de 5 292 escenas</h2>
+            <div style="margin-top:40px;flex:1;min-height:0">
+                <div class="reveal" style="--d:.25s">
+                    <table class="data big">
+                        <thead><tr><th>Fuente</th><th>Etiqueta</th><th>Train</th><th>Val</th><th>Test</th><th>Externo</th></tr></thead>
+                        <tbody>
+                            <tr><td>CS-Fog (propia)</td><td>métrica</td><td>5 032</td><td>918</td><td>1 000</td><td></td></tr>
+                            <tr><td>Foggy Cityscapes</td><td>métrica</td><td>12 123</td><td>1 377</td><td>1 500</td><td></td></tr>
+                            <tr><td>RESIDE-OTS</td><td>equivalente</td><td>10 087</td><td>2 170</td><td>2 170</td><td></td></tr>
+                            <tr><td>HazeRD</td><td>métrica</td><td></td><td></td><td></td><td>75</td></tr>
+                            <tr><td>O-HAZE</td><td>sin etiqueta</td><td></td><td></td><td></td><td>90</td></tr>
+                            <tr><td style="font-weight:600">Total</td><td></td><td style="font-weight:600">27 242</td><td style="font-weight:600">4 465</td><td style="font-weight:600">4 670</td><td style="font-weight:600">165</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="note" style="margin-top:22px">Separamos por escena para que una misma calle no quede en train y en test. Los externos no se usan para entrenar ni para elegir el modelo.</p>
+                </div>
+                <div class="split reveal" style="--d:.4s">
+                    <div class="bar grow" style="--d:.5s">
+                        <i style="width:74.6%;background:var(--ink)">Train 75 %</i><i style="width:12.2%;background:var(--ink-soft)">Val 12 %</i><i style="width:12.8%;background:#8FA0A6">Test 13 %</i><i style="width:.45%;background:var(--crit);padding:0"></i>
+                    </div>
+                    <div class="lbl"><span>27 242 imágenes para entrenar</span><span>Externos: 165 imágenes (0,5 %)</span></div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:10 (con 05b)">n por fuente × split. Splits por escena/ciudad con verificación anti-fuga. O-HAZE: 45 pares niebla real / limpia, sin etiqueta métrica.</aside>
+    </section>
+
+    <!-- 05b · ASÍ SE VE CADA BANDA -->
+    <section class="slide" data-label="05b">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Así se ve cada banda</h2>
+            <figure class="fig reveal" style="--d:.25s;margin-top:40px">
+                <img src="assets/ejemplos_bandas.png" alt="Un ejemplo de test por banda: arriba CS-Fog, abajo RESIDE o Foggy Cityscapes, con su visibilidad">
+                <figcaption>Imágenes de Cityscapes (Cordts et al., 2016), Foggy Cityscapes (Sakaridis et al., 2018) y RESIDE (Li et al., 2019).</figcaption>
+            </figure>
+            <p class="reveal" style="--d:.4s;margin-top:30px;font-size:30px;line-height:1.34">En RESIDE la niebla casi no se nota aunque la etiqueta diga 19 m: su profundidad es estimada, así que sus metros son <b>equivalentes</b>, no reales.</p>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="dentro de 1:10">Arriba CS-Fog, abajo el dataset oficial que tiene esa banda. Ejemplos de test elegidos cerca de 20, 75, 150 y 300 m, una escena distinta por imagen; en RESIDE y Foggy, el de neblina mediana (canal oscuro), no el más vistoso. En RESIDE la neblina sube con β, pero ni a 15 m parece niebla densa: por eso es visibilidad equivalente.</aside>
+    </section>
+
+    <!-- 06 · ATAJO Y BRECHA DE DOMINIO -->
+    <section class="slide" data-label="06">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">El riesgo: que el dataset delate la banda</h2>
+            <div class="legend reveal" style="--d:.2s;margin-top:44px">
+                <span style="--c:var(--crit)">Menos de 50 m</span><span style="--c:var(--alto)">50 a 100 m</span><span style="--c:var(--prec)">100 a 200 m</span><span style="--c:var(--ok)">200 m o más</span>
+            </div>
+            <div class="stack" style="margin-top:30px">
+                <div class="name reveal" style="--d:.25s">RESIDE<small>14 427 imágenes</small></div>
+                <div class="bar grow" style="--d:.3s"><i style="width:85.7%;background:var(--crit)">86 %</i><i style="width:14.3%;background:var(--alto)">14 %</i></div>
+                <div class="rng reveal" style="--d:.3s">15 a 75 m</div>
+
+                <div class="name reveal" style="--d:.35s">Foggy Cityscapes<small>15 000 imágenes</small></div>
+                <div class="bar grow" style="--d:.4s"><i class="p" style="width:33.3%;background:var(--prec)">33 %</i><i style="width:66.7%;background:var(--ok)">67 %</i></div>
+                <div class="rng reveal" style="--d:.4s">150 a 600 m</div>
+
+                <div class="name reveal" style="--d:.45s">CS-Fog<small>6 950 imágenes</small></div>
+                <div class="bar grow" style="--d:.5s"><i style="width:28.8%;background:var(--crit)">29 %</i><i style="width:16.9%;background:var(--alto)">17 %</i><i class="p" style="width:16.9%;background:var(--prec)">17 %</i><i style="width:37.4%;background:var(--ok)">37 %</i></div>
+                <div class="rng reveal" style="--d:.5s">15 a 1000 m</div>
+            </div>
+            <ul class="pts" style="margin-top:72px">
+                <li class="c-alto reveal" style="--d:.6s">Con solo RESIDE y Foggy, basta reconocer el dataset para acertar la banda. <b>CS-Fog</b> pone las cuatro bandas en las mismas calles.</li>
+                <li class="c-crit reveal" style="--d:.7s">Toda la niebla con etiqueta es sintética y pareja; la camanchaca real no lo es.</li>
+            </ul>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="0:35">RESIDE &lt; 75 m y Foggy ≥ 150 m. CS-Fog cubre las 4 bandas en un mismo dominio. Brecha sintético → real: niebla homogénea vs camanchaca advectiva y heterogénea.</aside>
+    </section>
+
+    <!-- 07 · MÉTODO -->
+    <section class="slide" data-label="07">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Misma receta para los dos modelos</h2>
+            <div style="display:grid;grid-template-columns:830px 1fr;gap:56px;margin-top:44px;flex:1;min-height:0">
+                <div style="display:flex;flex-direction:column;gap:30px">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+                        <div class="card model-card reveal" style="--c:var(--resnet);--d:.2s">
+                            <h3>ResNet-50</h3>
+                            <div class="id">CNN, ImageNet-1k</div>
+                            <div class="kv"><div><b>23,5 M</b>parámetros</div><div><b>3e-4</b>LR elegido</div></div>
+                        </div>
+                        <div class="card model-card reveal" style="--c:var(--deit);--d:.3s">
+                            <h3>DeiT-S</h3>
+                            <div class="id">Vision Transformer, ImageNet-1k</div>
+                            <div class="kv"><div><b>21,7 M</b>parámetros</div><div><b>1e-4</b>LR elegido</div></div>
+                        </div>
+                    </div>
+                    <ul class="proto reveal" style="--d:.4s">
+                        <li>Misma salida: la visibilidad, en escala logarítmica, y la banda</li>
+                        <li>Mismos pasos y aumentación, sin tocar color ni contraste</li>
+                        <li>Mismo barrido de LR y 3 semillas por modelo</li>
+                        <li>Elegimos solo con validación; test se evaluó una sola vez</li>
+                    </ul>
+                </div>
+                <figure class="fig chart reveal" style="--d:.45s;align-self:start">
+                    <img src="assets/g_curvas.png" alt="Curvas de aprendizaje en validación: DeiT-S baja más que ResNet-50">
+                    <figcaption>Error en validación durante el entrenamiento. Línea: promedio de 3 semillas; sombra: rango.</figcaption>
+                </figure>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:00">resnet50.a1_in1k vs deit_small_patch16_224.fb_in1k. Cabeza log10 V + CORN; AdamW, 3 600 pasos, lote 64; barrido {3e-5, 1e-4, 3e-4}; selección por media de log10-MAE por fuente en val.</aside>
+    </section>
+
+    <!-- 08 · RESULTADOS -->
+    <section class="slide" data-label="08">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">DeiT-S se equivoca menos <span class="soft">que ResNet-50</span></h2>
+            <div style="display:grid;grid-template-columns:360px 1fr;gap:48px;margin-top:44px">
+                <div style="display:flex;flex-direction:column;gap:30px">
+                    <div class="stat reveal" style="--d:.2s"><div class="num" style="color:var(--deit)">×1,11</div><div class="lbl"><span class="m deit">DeiT-S</span>, error típico</div></div>
+                    <div class="stat reveal" style="--d:.3s"><div class="num" style="color:var(--resnet)">×1,15</div><div class="lbl"><span class="m resnet">ResNet-50</span>, error típico</div></div>
+                </div>
+                <div class="reveal" style="--d:.35s">
+                    <table class="data">
+                        <thead><tr><th>Test</th><th>Error log10 [IC 95 %]</th><th>Error mediano</th><th>F1 bandas</th><th>Falso seguro</th><th>Error medio</th></tr></thead>
+                        <tbody>
+                            <tr class="best"><td><span class="m deit">DeiT-S</span></td><td>0,046 <span class="ci">[0,040 a 0,054]</span></td><td>6,5 %</td><td>0,915</td><td>0,60 %</td><td>15 m</td></tr>
+                            <tr><td><span class="m resnet">ResNet-50</span></td><td>0,062 <span class="ci">[0,059 a 0,067]</span></td><td>10,9 %</td><td>0,895</td><td>0,86 %</td><td>24 m</td></tr>
+                            <tr class="muted"><td><span class="m base">Sin deep learning</span></td><td>0,137 <span class="ci">[0,127 a 0,144]</span></td><td>21,3 %</td><td>0,736</td><td>3,9 %</td><td>51 m</td></tr>
+                            <tr class="muted"><td><span class="m base">Media por fuente</span></td><td>0,251 <span class="ci">[0,228 a 0,269]</span></td><td>50,0 %</td><td>0,442</td><td>16,3 %</td><td>97 m</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="decision reveal" style="--d:.5s;margin-top:28px">
+                        <div class="t">¿Es una diferencia real?</div>
+                        <p>Sobre las mismas escenas, DeiT-S tiene <span style="white-space:nowrap">0,016 [0,012 a 0,019]</span> menos de error. El intervalo no incluye el cero, y esa regla la fijamos antes de mirar test.</p>
+                    </div>
+                </div>
+            </div>
+            <p class="note reveal" style="--d:.6s;margin-top:auto">4 670 imágenes de test, promedio de 3 semillas. Falso seguro: menos de 100 m reales, predicho como 100 m o más.</p>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:30">log10-MAE en décadas; ×1,11 = 10^0,046. Diferencia pareada (bootstrap agrupado por escena, B = 2000): p &lt; 0,0005. Falso-seguro Δ +0,26 pp [0,06; 0,51]. Baseline físico HGB: ×1,37.</aside>
+    </section>
+
+    <!-- 08b · CONFUSIÓN DE BANDAS -->
+    <section class="slide" data-label="08b">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Cuando se equivoca, <span class="soft">es por una banda</span></h2>
+            <div style="display:grid;grid-template-columns:1080px 1fr;gap:56px;margin-top:44px;flex:1;min-height:0">
+                <figure class="fig chart reveal" style="--d:.2s;align-self:start">
+                    <img src="assets/g_confusion.png" alt="Matrices de confusión de bandas en test para ResNet-50 y DeiT-S: casi todo cae en la diagonal o en la banda vecina">
+                    <figcaption>Test, promedio de 3 semillas. Cada fila suma 100 %; un punto es menos de 0,5 %.</figcaption>
+                </figure>
+                <ul class="pts" style="padding-top:12px">
+                    <li class="reveal" style="--d:.3s">Casi todos los errores caen en la <b>banda vecina</b>. Casi nunca salta dos bandas.</li>
+                    <li class="c-ok reveal" style="--d:.4s"><span class="m deit">DeiT-S</span> acierta la banda el 91, 90, 96 y 99 % de las veces; <span class="m resnet">ResNet-50</span>, el 89, 87, 93 y 99 %.</li>
+                    <li class="c-crit reveal" style="--d:.5s">Decir que se ve bien cuando no, el error peligroso, pasa en el <b>0,6 %</b> de los casos con DeiT-S.</li>
+                </ul>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="0:30">Bandas calculadas desde la visibilidad estimada. Con la salida ordinal (CORN) el F1 por bandas es 0,929 (DeiT-S) y 0,911 (ResNet-50). Falso seguro: V real &lt; 100 m predicha ≥ 100 m.</aside>
+    </section>
+
+    <!-- 09 · POR FUENTE Y EXTERNOS -->
+    <section class="slide" data-label="09">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Muy bien en su dominio, <span class="soft">mal fuera de él</span></h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:44px">
+                <div style="display:flex;flex-direction:column;gap:20px">
+                    <figure class="fig chart reveal" style="--d:.2s">
+                        <img src="assets/g_por_dataset.png" alt="Error por dataset en test: DeiT-S y ResNet-50 muy por debajo del modelo sin deep learning">
+                        <figcaption>Error por dataset en test</figcaption>
+                    </figure>
+                    <p class="reveal" style="--d:.3s;font-size:30px;line-height:1.34"><span class="m deit">DeiT-S</span> gana en los tres datasets. La mayor distancia está en Foggy Cityscapes: 0,020 contra 0,050.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:20px">
+                    <figure class="fig chart reveal" style="--d:.35s">
+                        <img src="assets/g_hazerd.png" alt="HazeRD: ambos modelos estiman casi siempre menos de 100 m aunque la visibilidad real llegue a 766 m">
+                        <figcaption>HazeRD, un dataset que los modelos nunca vieron</figcaption>
+                    </figure>
+                    <p class="reveal" style="--d:.45s;font-size:30px;line-height:1.34">En HazeRD ambos <b>subestiman unas 7 veces</b>. En O-HAZE, con niebla real, el 99 % de las veces dan menos visibilidad a la foto con niebla que a la limpia.</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:00 (con 09b)">HazeRD: log10-MAE 0,82–0,84 (×6,6–6,9), peor que predecir la media (0,43); falso-seguro 0 porque siempre predice poco. O-HAZE: 0,993 de 45 pares con V̂ niebla &lt; V̂ limpia. Es la brecha de dominio.</aside>
+    </section>
+
+    <!-- 09b · ACIERTOS Y ERRORES -->
+    <section class="slide" data-label="09b">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Aciertos y errores</h2>
+            <figure class="fig reveal" style="--d:.25s;margin-top:32px;width:1470px">
+                <img src="assets/aciertos_errores.png" alt="Seis ejemplos de test con la visibilidad real y la predicha por ResNet-50 y DeiT-S: tres aciertos y tres errores">
+                <figcaption>Mismos ejemplos para ambos modelos, promedio de 3 semillas. Imágenes de Cityscapes, Foggy Cityscapes y RESIDE (visibilidad equivalente).</figcaption>
+            </figure>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="dentro de 1:00">Aciertos: uno por dataset, error casi nulo en ambos. Falso seguro: RESIDE 49,9 m (β = 0,06, justo en el borde de 50 m); ResNet dice 100 m, apenas sobre el corte, DeiT 61 m. Peor de ResNet: Foggy 150 m con la calle cercana nítida, predice 339 m (DeiT 286). Peor de DeiT: CS-Fog 228 m con manchas blancas del render (huecos de disparidad), ambos dicen ~380 m.</aside>
+    </section>
+
+    <!-- 10 · INTERPRETABILIDAD -->
+    <section class="slide" data-label="10">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">¿Miran la niebla o reconocen el dataset?</h2>
+            <div style="display:grid;grid-template-columns:840px 1fr;gap:56px;margin-top:36px;flex:1;min-height:0">
+                <figure class="fig reveal" style="--d:.2s;align-self:start">
+                    <div class="interp-head"><span>Imagen</span><span>ResNet-50 Grad-CAM</span><span>DeiT-S Grad-CAM</span><span>DeiT-S atención</span></div>
+                    <img src="assets/interpret_rows.png" alt="Grad-CAM y atención sobre un ejemplo de CS-Fog, Foggy Cityscapes y RESIDE">
+                    <figcaption>Imágenes de Cityscapes (Cordts et al., 2016), Foggy Cityscapes (Sakaridis et al., 2018) y RESIDE (Li et al., 2019)</figcaption>
+                </figure>
+                <div class="hyp">
+                    <div class="h reveal" style="--d:.3s"><div class="k">1</div><div><div class="q">¿Dónde mira?</div><p><span class="m resnet">ResNet-50</span> busca la niebla en lo <b>lejano</b> y la nitidez en lo cercano, como dice la física. <span class="m deit">DeiT-S</span> reparte más su atención.</p></div></div>
+                    <div class="h reveal" style="--d:.4s"><div class="k">2</div><div><div class="q">¿Usa la profundidad?</div><p>Si hacemos la niebla pareja, sin profundidad, DeiT-S cambia su estimación ×1,8 y ResNet-50 ×1,4. DeiT-S se apoya más en cómo la niebla aumenta con la distancia.</p></div></div>
+                    <div class="h reveal" style="--d:.5s"><div class="k">3</div><div><div class="q">¿Reconoce el dataset?</div><p>Sí: un clasificador simple adivina el dataset en el 92 a 96 % de los casos. Pero dentro de cada dataset igual ordenan bien la visibilidad (Spearman 0,92 a 0,99).</p></div></div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:15">Grad-CAM de −ŷ (ambos) y attention rollout (DeiT) sobre los mismos ejemplos. ResNet: razón masa/área 1,5 en "lejos". Contrafactual de niebla uniforme: |Δ| ×1,38 / ×1,81. Sonda lineal de fuente: 0,92 / 0,96 (azar 0,33).</aside>
+    </section>
+
+    <!-- 11 · AUTOS -->
+    <section class="slide" data-label="11">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">¿Hasta qué distancia se detectan autos?</h2>
+            <div style="display:grid;grid-template-columns:860px 1fr;gap:64px;margin-top:40px;flex:1;min-height:0">
+                <figure class="fig chart reveal" style="--d:.2s;align-self:start">
+                    <img src="assets/g_autos.png" alt="Autos detectados con niebla respecto a sin niebla, según la distancia; cada nivel de niebla cae bajo el 50 % antes de su visibilidad">
+                    <figcaption>Cada línea es un nivel de niebla, rotulado con su visibilidad. El punto marca dónde se pierde la mitad de los autos.</figcaption>
+                </figure>
+                <div style="display:flex;flex-direction:column;gap:30px">
+                    <p class="reveal" style="--d:.3s;font-size:30px;line-height:1.34">Un detector de autos sobre 475 escenas de Cityscapes, con cinco niveles de niebla.</p>
+                    <table class="data reveal" style="--d:.4s">
+                        <thead><tr><th>Visibilidad</th><th>Detecta autos hasta</th><th>Frena a tiempo bajo</th></tr></thead>
+                        <tbody>
+                            <tr><td>599 m</td><td>más de 145 m</td><td>más de 91 km/h</td></tr>
+                            <tr><td>300 m</td><td>115 m</td><td>79 km/h</td></tr>
+                            <tr><td>150 m</td><td>71 m</td><td>57 km/h</td></tr>
+                            <tr><td>100 m</td><td>50 m</td><td>44 km/h</td></tr>
+                            <tr><td>50 m</td><td>33 m</td><td>33 km/h</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="reveal" style="--d:.5s;font-size:30px;line-height:1.34">Los autos <b>dejan de verse antes</b> del límite de visibilidad: entre el 40 y el 66 % de esa distancia. Decidir la velocidad solo con la visibilidad es optimista.</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:00">Faster R-CNN R50-FPN v2 (COCO), puntaje ≥ 0,5, IoU ≥ 0,5; 475 frames × 6 condiciones. V_det = distancia donde el recall relativo a sin niebla cae bajo 0,5. IC 95 % (bootstrap por secuencia): 115 [97–120], 71 [63–74], 50 [47–51], 33 [32–35] m. Con β = 0,005 nunca baja del umbral dentro de 145 m. La MOR describe un objeto negro grande; un auto es más chico y de menor contraste.</aside>
+    </section>
+
+    <!-- 12 · VELOCIDAD VS PRECISIÓN -->
+    <section class="slide" data-label="12">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Elegimos DeiT-S: <span class="soft">más preciso y más rápido</span></h2>
+            <div style="display:grid;grid-template-columns:820px 1fr;gap:56px;margin-top:44px;flex:1;min-height:0">
+                <figure class="fig chart reveal" style="--d:.2s;align-self:start">
+                    <img src="assets/g_pareto.png" alt="Error contra tiempo por imagen: DeiT-S abajo a la izquierda, mejor que ResNet-50 en ambos ejes">
+                    <figcaption>Error en test contra tiempo por imagen en CPU, con IC 95 %</figcaption>
+                </figure>
+                <div style="display:flex;flex-direction:column;gap:30px">
+                    <table class="data reveal" style="--d:.3s">
+                        <thead><tr><th>Por imagen</th><th><span class="m resnet">ResNet-50</span></th><th><span class="m deit">DeiT-S</span></th></tr></thead>
+                        <tbody>
+                            <tr><td>CPU</td><td>54,7 ms</td><td>29,9 ms</td></tr>
+                            <tr><td>GPU T4</td><td>7,6 ms</td><td>5,1 ms</td></tr>
+                            <tr><td>Operaciones</td><td>4,1 GMAC</td><td>4,6 GMAC</td></tr>
+                            <tr><td>Parámetros</td><td>23,5 M</td><td>21,7 M</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="decision reveal" style="--d:.45s">
+                        <div class="t">Para una cámara en la ruta</div>
+                        <p>Sin GPU, DeiT-S procesa unas 33 imágenes por segundo, casi el doble que ResNet-50, y además se equivoca menos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="0:30">CPU fp32 lote 1, GPU fp16 lote 1; mediana tras calentamiento. DeiT-S tiene más GMACs pero menor latencia medida.</aside>
+    </section>
+
+    <!-- 13 · DEMO -->
+    <section class="slide" data-label="13">
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Demo en vivo</h2>
+            <div style="display:grid;grid-template-columns:1fr 900px;gap:64px;margin-top:44px;flex:1;min-height:0">
+                <div style="display:flex;flex-direction:column;gap:34px">
+                    <ol class="steps">
+                        <li class="reveal" style="--d:.2s"><span><b>Ruta 68</b> con niebla en los cerros: visibilidad en metros, banda y dónde mira el modelo.</span></li>
+                        <li class="reveal" style="--d:.3s"><span>Una avenida con <b>niebla más densa</b>, para comparar.</span></li>
+                        <li class="reveal" style="--d:.4s"><span><b>Simular niebla</b> sobre una escena despejada: fijamos la visibilidad y vemos si el modelo la recupera.</span></li>
+                    </ol>
+                    <p class="note reveal" style="--d:.5s">Con DeiT-S, el modelo que elegimos, corriendo en CPU. La velocidad que sugiere es solo ilustrativa.</p>
+                </div>
+                <div style="display:flex;flex-direction:column;gap:22px">
+                    <a class="demo-shot reveal" style="--d:.35s" href="https://bcdc9cf951e43a8927.gradio.live/" target="_blank" rel="noopener">
+                        <img src="assets/demo_app.jpg" alt="Interfaz de la demo: subir una foto, elegir modelo y ver visibilidad estimada, banda, incertidumbre, velocidad y mapa">
+                    </a>
+                    <a class="demo-link reveal" style="--d:.45s" href="https://bcdc9cf951e43a8927.gradio.live/" target="_blank" rel="noopener">bcdc9cf951e43a8927.gradio.live</a>
+                    <p class="note reveal" style="--d:.5s;font-size:20px">Foto de la captura: Ks0stm, CC BY-SA 3.0, vía Wikimedia Commons.</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Una persona opera y otra comenta" data-time="2:00">Clic en la captura o en el enlace abre la demo en otra pestaña. Elegir DeiT-S en el desplegable (por defecto viene ResNet-50). Estimar visibilidad: primero fotos_prueba/estimar_visibilidad/03_ruta68_cerros_con_niebla.jpg (dio unos 293 m, Aceptable; las semillas discrepan, ×1,8), luego 04_ruta_niebla_media.jpg (dio unos 64 m, Alto riesgo, semillas casi iguales). Simular niebla: usar el ejemplo sintético de la propia pestaña con V = 80 m (estimó unos 50 m, misma banda); con fotos reales la simulación tiñe de blanco todo sobre el horizonte y el modelo subestima 4 a 7 veces. Evitar las fotos 01, 02, 05 y 06 (el titular de banda contradice la visibilidad) y la 07 (de noche, sin aviso). Si tarda, marcar Sin mapa. El enlace gradio.live cambia si se reinicia la app: probarlo antes de entrar a la sala.</aside>
+    </section>
+
+    <!-- 14 · CONCLUSIONES -->
+    <section class="slide s-close" data-label="14">
+        <div class="photo-band photo-in" aria-hidden="true"></div>
+        <div class="photo-veil" aria-hidden="true"></div>
+        <div class="inner">
+            <h2 class="h2 reveal" style="--d:.1s">Conclusiones</h2>
+            <div class="cols3" style="margin-top:48px">
+                <div class="card reveal" style="--c:var(--ok);--d:.2s">
+                    <h3>Lo que mostramos</h3>
+                    <ul>
+                        <li>DeiT-S estima la visibilidad mejor que ResNet-50, con una diferencia significativa.</li>
+                        <li>Los dos superan con holgura a un modelo físico sin deep learning.</li>
+                        <li>Con niebla real ordenan bien qué imagen se ve menos.</li>
+                    </ul>
+                </div>
+                <div class="card reveal" style="--c:var(--crit);--d:.3s">
+                    <h3>Lo que no podemos afirmar</h3>
+                    <ul>
+                        <li>Que funcione con camanchaca real: no hay datos con visibilidad medida.</li>
+                        <li>Que generalice: en HazeRD fallan por mucho.</li>
+                        <li>De noche o con lluvia: no hay datos así.</li>
+                    </ul>
+                </div>
+                <div class="card reveal" style="--c:var(--prec);--d:.4s">
+                    <h3>Lo que sigue</h3>
+                    <ul>
+                        <li>Una cámara fija en La Pólvora con marcas a distancia conocida.</li>
+                        <li>Datos con visibilidad medida para ajustar al dominio real.</li>
+                        <li>Recomendar velocidad según la distancia a la que se detectan los autos.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="reveal" style="--d:.55s;margin-top:auto;font:700 60px var(--font-display);text-transform:uppercase">Gracias. <span style="color:var(--ink-soft)">¿Preguntas?</span></div>
+        </div>
+        <aside class="notes" data-speaker="Por asignar" data-time="1:20">RESIDE es visibilidad equivalente. Trabajo futuro: KITTI, Multifog, DENSE; adaptación de dominio.</aside>
+    </section>
+
+    <!-- ANEXO (no se presenta) -->
+    <section class="slide" data-label="A">
+        <div class="kosch" id="annexTitle" aria-label="Respaldo" style="top:380px;font-size:230px"></div>
+        <aside class="notes" data-speaker="—" data-time="—">Láminas para responder preguntas. Saltar con #A1… en la URL.</aside>
+    </section>
+
+    <!-- A1 · ε -->
+    <section class="slide s-annex" data-label="A1">
+        <div class="inner">
+            <h2 class="qa">¿Por qué 5 % y no 2 %?</h2>
+            <div style="display:grid;grid-template-columns:640px 1fr;gap:60px;margin-top:48px">
+                <p class="answer">El 5 % es la definición de la OMM y la que usa Foggy Cityscapes. Con 2 % la visibilidad sale <b>31 % mayor</b>, más optimista. Cambiar el umbral solo mueve las bandas: el error relativo no cambia.</p>
+                <table class="data">
+                    <thead><tr><th>Test</th><th>F1 con 5 %</th><th>F1 con 2 %</th><th>Falso seguro 5 %</th><th>Falso seguro 2 %</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="m deit">DeiT-S</span></td><td>0,915</td><td>0,863</td><td>0,60 %</td><td>5,57 %</td></tr>
+                        <tr><td><span class="m resnet">ResNet-50</span></td><td>0,895</td><td>0,806</td><td>0,86 %</td><td>5,42 %</td></tr>
+                        <tr class="muted"><td><span class="m base">Sin deep learning</span></td><td>0,736</td><td>0,721</td><td>3,90 %</td><td>5,91 %</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">ε = 0,05 (MOR) vs ε = 0,02 (avance). Verdad y predicción se escalan igual (×1,306), así que el log10-MAE no cambia.</aside>
+    </section>
+
+    <!-- A2 · atajo -->
+    <section class="slide s-annex" data-label="A2">
+        <div class="inner">
+            <h2 class="qa">¿El modelo solo aprende qué dataset es?</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:48px">
+                <table class="data">
+                    <thead><tr><th>Adivinar el dataset</th><th>Acierto</th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="m deit">DeiT-S</span></td><td>96 %</td></tr>
+                        <tr><td><span class="m resnet">ResNet-50</span></td><td>92 %</td></tr>
+                        <tr><td><span class="m base">Rasgos físicos</span></td><td>84 %</td></tr>
+                        <tr class="muted"><td>Al azar</td><td>33 %</td></tr>
+                        <tr class="muted"><td>Banda adivinada solo por el dataset</td><td>43 %</td></tr>
+                    </tbody>
+                </table>
+                <p class="answer">Sí lo distinguen. Pero saber el dataset solo acierta el 43 % de las bandas, y los modelos son mucho mejores que predecir la media de cada dataset (×1,11 contra ×1,78). Dentro de cada dataset ordenan bien la visibilidad.</p>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Sonda lineal de fuente (exactitud balanceada, GroupKFold). Spearman por fuente 0,92–0,99. Contrafactual de niebla uniforme.</aside>
+    </section>
+
+    <!-- A3 · DeiT-S vs ViT-B -->
+    <section class="slide s-annex" data-label="A3">
+        <div class="inner">
+            <h2 class="qa">¿Por qué DeiT-S y no ViT-B?</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;margin-top:48px">
+                <p class="answer">Para comparar modelos de <b>tamaño y preentrenamiento parecidos</b>: 21,7 M y 23,5 M parámetros, los dos con ImageNet-1k. En el avance comparamos un ViT-B de 87 M con una ResNet de 25 M, y eso no era justo.</p>
+                <div class="card">
+                    <h3>¿Cómo saben que la diferencia es real?</h3>
+                    <p>Antes de mirar test decidimos que solo hay diferencia si el intervalo de confianza, calculado remuestreando escenas completas, no incluye el cero. Usamos 3 semillas y test se evaluó una sola vez.</p>
+                </div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Bootstrap pareado agrupado, B = 2000. DeiT-B solo como punto de velocidad.</aside>
+    </section>
+
+    <!-- A4 · diferencias por dataset -->
+    <section class="slide s-annex" data-label="A4">
+        <div class="inner">
+            <h2 class="qa">¿En qué datasets es real la diferencia?</h2>
+            <table class="data" style="margin-top:48px">
+                <thead><tr><th>ResNet-50 menos DeiT-S</th><th>Error log10 [IC 95 %]</th><th>Falso seguro [IC 95 %]</th><th>F1 bandas [IC 95 %]</th></tr></thead>
+                <tbody>
+                    <tr><td>Test completo</td><td>+0,016 <span class="ci">[0,012 a 0,019]</span></td><td>+0,26 pp <span class="ci">[0,06 a 0,51]</span></td><td>−0,021 <span class="ci">[−0,027 a −0,012]</span></td></tr>
+                    <tr><td>CS-Fog</td><td>+0,007 <span class="ci">[0,003 a 0,009]</span></td><td>+0,47 pp <span class="ci">[−0,23 a 2,43]</span></td><td>−0,028 <span class="ci">[−0,038 a −0,001]</span></td></tr>
+                    <tr><td>Foggy Cityscapes</td><td>+0,030 <span class="ci">[0,024 a 0,032]</span></td><td class="muted">no aplica</td><td>−0,010 <span class="ci">[−0,013 a −0,002]</span></td></tr>
+                    <tr><td>RESIDE</td><td>+0,011 <span class="ci">[0,008 a 0,015]</span></td><td>+0,22 pp <span class="ci">[0,03 a 0,43]</span></td><td>−0,024 <span class="ci">[−0,036 a −0,011]</span></td></tr>
+                    <tr><td>HazeRD</td><td>−0,023 <span class="ci">[−0,043 a −0,003]</span></td><td>0</td><td>+0,010 <span class="ci">[0 a 0,021]</span></td></tr>
+                </tbody>
+            </table>
+            <p class="answer" style="margin-top:32px">Un valor positivo en error significa que DeiT-S es mejor. En HazeRD gana ResNet-50, pero los dos fallan.</p>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Foggy Cityscapes no tiene imágenes bajo 100 m, por eso el falso seguro no aplica.</aside>
+    </section>
+
+    <!-- A5 · baselines -->
+    <section class="slide s-annex" data-label="A5">
+        <div class="inner">
+            <h2 class="qa">¿Cuánto aporta el deep learning?</h2>
+            <table class="data" style="margin-top:48px">
+                <thead><tr><th>Test</th><th>Error log10 [IC 95 %]</th><th>Error típico</th><th>F1 bandas</th><th>Falso seguro</th><th>Error medio</th></tr></thead>
+                <tbody>
+                    <tr class="best"><td><span class="m deit">DeiT-S</span></td><td>0,046 <span class="ci">[0,040 a 0,054]</span></td><td>×1,11</td><td>0,915</td><td>0,60 %</td><td>15 m</td></tr>
+                    <tr><td><span class="m resnet">ResNet-50</span></td><td>0,062 <span class="ci">[0,059 a 0,067]</span></td><td>×1,15</td><td>0,895</td><td>0,86 %</td><td>24 m</td></tr>
+                    <tr><td><span class="m base">Físico, árboles</span></td><td>0,137 <span class="ci">[0,127 a 0,144]</span></td><td>×1,37</td><td>0,736</td><td>3,9 %</td><td>51 m</td></tr>
+                    <tr><td><span class="m base">Físico, lineal</span></td><td>0,210 <span class="ci">[0,200 a 0,220]</span></td><td>×1,62</td><td>0,588</td><td>8,8 %</td><td>74 m</td></tr>
+                    <tr><td><span class="m base">Media por dataset</span></td><td>0,251 <span class="ci">[0,228 a 0,269]</span></td><td>×1,78</td><td>0,442</td><td>16,3 %</td><td>97 m</td></tr>
+                    <tr><td><span class="m base">Siempre la banda más común</span></td><td>0,578 <span class="ci">[0,436 a 0,693]</span></td><td>×3,78</td><td>0,156</td><td>0 %</td><td>159 m</td></tr>
+                </tbody>
+            </table>
+            <p class="answer" style="margin-top:28px;color:var(--ink-soft)">Los baselines físicos usan 12 medidas de contraste y del canal oscuro de la imagen.</p>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Físico = HGB y ridge. "Siempre crítico" tiene falso seguro 0 porque nunca dice que se ve bien: seguro pero inútil. Media global: 0,492 (×3,11).</aside>
+    </section>
+
+    <!-- A6 · LR -->
+    <section class="slide s-annex" data-label="A6">
+        <div class="inner">
+            <h2 class="qa">¿Cómo eligieron el learning rate?</h2>
+            <div style="display:grid;grid-template-columns:1000px 1fr;gap:56px;margin-top:48px">
+                <table class="data">
+                    <thead><tr><th>Modelo</th><th>LR</th><th>LR cabeza</th><th>Error en val</th><th></th></tr></thead>
+                    <tbody>
+                        <tr><td><span class="m resnet">ResNet-50</span></td><td>3e-5</td><td>3e-4</td><td>0,122</td><td></td></tr>
+                        <tr><td><span class="m resnet">ResNet-50</span></td><td>1e-4</td><td>1e-3</td><td>0,089</td><td></td></tr>
+                        <tr class="best"><td><span class="m resnet">ResNet-50</span></td><td>3e-4</td><td>3e-3</td><td>0,073</td><td>elegido</td></tr>
+                        <tr><td><span class="m deit">DeiT-S</span></td><td>3e-5</td><td>3e-4</td><td>0,057</td><td></td></tr>
+                        <tr class="best"><td><span class="m deit">DeiT-S</span></td><td>1e-4</td><td>1e-3</td><td>0,052</td><td>elegido</td></tr>
+                        <tr><td><span class="m deit">DeiT-S</span></td><td>3e-4</td><td>3e-3</td><td>0,052</td><td></td></tr>
+                    </tbody>
+                </table>
+                <p class="answer">Misma grilla y mismos pasos para los dos, eligiendo solo con validación. Para ResNet-50 ganó el LR más alto de la grilla, así que un valor mayor podría haberlo mejorado algo.</p>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Barrido con semilla 0 y 1 200 pasos. Empate: menor LR. Reconocer el borde de la grilla como limitación.</aside>
+    </section>
+
+    <!-- A7 · alcance -->
+    <section class="slide s-annex" data-label="A7">
+        <div class="inner">
+            <h2 class="qa">Alcance y equipo</h2>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px 48px;margin-top:44px">
+                <div class="card"><h3>¿Funciona con camanchaca real?</h3><p>No lo podemos afirmar: no hay imágenes reales con visibilidad medida. O-HAZE y las fotos de La Pólvora solo sirven de forma cualitativa.</p></div>
+                <div class="card"><h3>¿Por qué no AIR-VIEW?</h3><p>Casi todas sus etiquetas pasan de 1,6 km, no cubre 0 a 200 m, es de pago y usa cámaras meteorológicas.</p></div>
+                <div class="card"><h3>¿De noche o con lluvia?</h3><p>Fuera de alcance: todos los datos son diurnos. La demo avisa si la foto parece nocturna.</p></div>
+                <div class="card"><h3>¿Quién hizo qué?</h3><p>Tomás: datos, baselines, autos y demo. Nelson: entrenamiento, evaluación, interpretabilidad y tiempos.</p></div>
+            </div>
+        </div>
+        <aside class="notes" data-speaker="Respaldo" data-time="—">Uso de IA: asistente para código y documentación, bajo revisión, declarado en el README y el informe. Las cifras salen solo del código.</aside>
+    </section>
+
+</main>
+</div>
+
+<div class="notes-panel" id="notesPanel" role="complementary" aria-label="Notas del orador"></div>
+<div class="edit-hotzone" aria-hidden="true"></div>
+<button class="edit-toggle" id="editToggle" title="Modo edición (E)">Editar</button>
+<div class="restore-bar" id="restoreBar">Hay cambios sin guardar de una sesión anterior.
+    <button id="restoreYes">Restaurar</button><button id="restoreNo">Descartar</button></div>
+
+<script>
+/* ===========================================
+   A. TÍTULO QUE SE DESVANECE: cada letra está "más lejos"
+      opacidad = exp(−β·d), con desenfoque creciente
+   =========================================== */
+function koschmieder(el, word, beta, extra) {
+    [...word].forEach((ch, i) => {
+        const sp = document.createElement('span');
+        sp.textContent = ch;
+        sp.style.setProperty('--c', Math.max(0.12, Math.exp(-beta * i)).toFixed(3));
+        sp.style.setProperty('--b', (i * 0.55).toFixed(1) + 'px');
+        sp.style.transitionDelay = (0.15 + i * 0.07) + 's';
+        el.appendChild(sp);
+    });
+    if (extra) {
+        const p2 = document.createElement('span');
+        p2.className = 'p2';
+        p2.textContent = extra;
+        p2.style.setProperty('--c', '1');
+        p2.style.setProperty('--b', '0px');
+        p2.style.transitionDelay = '.8s';
+        el.appendChild(p2);
+    }
+}
+koschmieder(document.getElementById('koschTitle'), 'Camanchaca', 0.17, 'Predict');
+koschmieder(document.getElementById('annexTitle'), 'Respaldo', 0.2);
+
+/* ===========================================
+   B. CURVA DE CONTRASTE (04): C(d) = exp(−0,02·d), d de 0 a 300 m
+   =========================================== */
+(function () {
+    const pts = [];
+    for (let d = 0; d <= 300; d += 3) {
+        const C = Math.exp(-0.02 * d);
+        pts.push(`${(70 + d * 770 / 300).toFixed(1)},${(20 + (1 - C) * 340).toFixed(1)}`);
+    }
+    document.getElementById('ccPath').setAttribute('d', 'M' + pts.join(' L'));
+})();
+
+/* ===========================================
+   C. CONTROLADOR
+   =========================================== */
+class SlidePresentation {
+    constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.stage = document.getElementById('deckStage');
+        this.notesPanel = document.getElementById('notesPanel');
+        this.current = 0;
+        this.wheelLock = false;
+        this.setupStageScale();
+        this.setupKeyboardNav();
+        this.setupTouchNav();
+        this.setupWheelNav();
+        window.addEventListener('hashchange', () => this.goToHash());
+        if (!this.goToHash()) this.show(0);
+    }
+
+    setupStageScale() {
+        const scale = () => {
+            const k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+            const x = (window.innerWidth - 1920 * k) / 2;
+            const y = (window.innerHeight - 1080 * k) / 2;
+            this.stage.style.transform = `translate(${x}px, ${y}px) scale(${k})`;
+        };
+        scale();
+        window.addEventListener('resize', scale);
+    }
+
+    isEditingText(e) {
+        return e.target && (e.target.isContentEditable || /INPUT|TEXTAREA/.test(e.target.tagName));
+    }
+
+    setupKeyboardNav() {
+        document.addEventListener('keydown', (e) => {
+            if (this.isEditingText(e) || e.ctrlKey || e.metaKey || e.altKey) return;
+            const k = e.key;
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(k)) { e.preventDefault(); this.show(this.current + 1); }
+            else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(k)) { e.preventDefault(); this.show(this.current - 1); }
+            else if (k === 'Home') this.show(0);
+            else if (k === 'End') this.show(this.slides.length - 1);
+            else if (k === 'n' || k === 'N') this.notesPanel.classList.toggle('show');
+            else if (k === 'f' || k === 'F') {
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+                else document.exitFullscreen?.();
+            }
+        });
+    }
+
+    setupTouchNav() {
+        let x0 = null, y0 = null;
+        document.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', (e) => {
+            if (x0 === null) return;
+            const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) this.show(this.current + (dx < 0 ? 1 : -1));
+            x0 = y0 = null;
+        }, { passive: true });
+    }
+
+    setupWheelNav() {
+        window.addEventListener('wheel', (e) => {
+            if (document.body.classList.contains('editing') || this.wheelLock || Math.abs(e.deltaY) < 25) return;
+            this.wheelLock = true;
+            this.show(this.current + (e.deltaY > 0 ? 1 : -1));
+            setTimeout(() => { this.wheelLock = false; }, 650);
+        }, { passive: true });
+    }
+
+    /* #8 o #08 → lámina 08; #09b; #A1 */
+    goToHash() {
+        const h = decodeURIComponent(location.hash.replace('#', '')).trim().toLowerCase();
+        if (!h) return false;
+        let i = this.slides.findIndex(s => (s.dataset.label || '').toLowerCase() === h.padStart(2, '0'));
+        if (i < 0) i = this.slides.findIndex(s => (s.dataset.label || '').toLowerCase() === h);
+        if (i < 0 || i >= this.slides.length) return false;
+        this.show(i, false);
+        return true;
+    }
+
+    show(index, updateHash = true) {
+        this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+        this.slides.forEach((s, i) => {
+            const on = i === this.current;
+            s.classList.toggle('active', on);
+            s.classList.toggle('visible', on);
+            s.setAttribute('aria-hidden', on ? 'false' : 'true');
+        });
+        const s = this.slides[this.current];
+        if (updateHash && s.dataset.label) history.replaceState(null, '', '#' + s.dataset.label);
+        const n = s.querySelector('aside.notes');
+        this.notesPanel.innerHTML = n
+            ? `<div class="who">${s.dataset.label} · ${n.dataset.speaker || ''} · ${n.dataset.time || ''}</div>${n.innerHTML}`
+            : '';
+    }
+}
+const deck = new SlidePresentation();
+
+/* ===========================================
+   D. EDICIÓN EN LÍNEA (E o esquina superior izquierda; Ctrl+S descarga)
+   =========================================== */
+const DECK_KEY = 'camanchaca-final-2026-11-26-v2';
+const EDITABLE = '.slide h1, .slide h2, .slide h3, .slide p, .slide li, .slide td, .slide th, .slide figcaption, .slide .lbl, .slide .what, .slide .q, .slide .t, .slide .b, .slide .s, .slide .ph-tag, .slide .ph-inset span';
+function cleanStageHTML() {
+    const c = deck.stage.cloneNode(true);
+    c.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+    c.querySelectorAll('.slide').forEach(s => { s.classList.remove('active', 'visible'); s.removeAttribute('aria-hidden'); });
+    return c.innerHTML;
+}
+const editor = {
+    isActive: false,
+    dirty: false,
+    toggleEditMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('editing', this.isActive);
+        document.getElementById('editToggle').classList.toggle('active', this.isActive);
+        document.querySelectorAll(EDITABLE).forEach(el => {
+            if (this.isActive) el.setAttribute('contenteditable', 'true');
+            else el.removeAttribute('contenteditable');
+        });
+        if (!this.isActive && this.dirty) this.autosave();
+    },
+    autosave() {
+        try { localStorage.setItem(DECK_KEY, cleanStageHTML()); } catch (e) { /* sin almacenamiento */ }
+    },
+    download() {
+        const wasActive = this.isActive;
+        if (wasActive) this.toggleEditMode();
+        const clone = document.documentElement.cloneNode(true);
+        clone.querySelectorAll('.slide').forEach(s => { s.classList.remove('active', 'visible'); s.removeAttribute('aria-hidden'); });
+        clone.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+        clone.querySelector('#koschTitle').innerHTML = '';
+        clone.querySelector('#annexTitle').innerHTML = '';
+        clone.querySelector('#notesPanel').innerHTML = '';
+        const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'index.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        try { localStorage.removeItem(DECK_KEY); } catch (e) {}
+        if (wasActive) this.toggleEditMode();
+    }
+};
+document.getElementById('editToggle').addEventListener('click', () => editor.toggleEditMode());
+(function hoverReveal() {
+    const hot = document.querySelector('.edit-hotzone');
+    const btn = document.getElementById('editToggle');
+    let t = null;
+    const hide = () => { t = setTimeout(() => { if (!editor.isActive) btn.classList.remove('show'); }, 400); };
+    hot.addEventListener('mouseenter', () => { clearTimeout(t); btn.classList.add('show'); });
+    hot.addEventListener('mouseleave', hide);
+    btn.addEventListener('mouseenter', () => clearTimeout(t));
+    btn.addEventListener('mouseleave', hide);
+    hot.addEventListener('click', () => editor.toggleEditMode());
+})();
+document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) { e.preventDefault(); editor.download(); return; }
+    if ((e.key === 'e' || e.key === 'E') && !e.target.isContentEditable && !e.ctrlKey && !e.metaKey) editor.toggleEditMode();
+});
+document.addEventListener('input', () => { if (editor.isActive) { editor.dirty = true; editor.autosave(); } });
+(function offerRestore() {
+    let saved = null;
+    try { saved = localStorage.getItem(DECK_KEY); } catch (e) { return; }
+    if (!saved || saved === cleanStageHTML()) return;
+    const bar = document.getElementById('restoreBar');
+    bar.classList.add('show');
+    document.getElementById('restoreYes').onclick = () => {
+        deck.stage.innerHTML = saved;
+        deck.slides = Array.from(deck.stage.querySelectorAll('.slide'));
+        deck.show(deck.current, false);
+        bar.classList.remove('show');
+    };
+    document.getElementById('restoreNo').onclick = () => {
+        try { localStorage.removeItem(DECK_KEY); } catch (e) {}
+        bar.classList.remove('show');
+    };
+})();
+</script>
+</body>
+</html>

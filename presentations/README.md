@@ -9,15 +9,17 @@ nunca carpetas con datos.
 |-------|-----------|---------|--------|
 | 2026-09-21 | Avance en clase (borrador) | `2026-09-21_avance/` | histórico |
 | 2026-09-28 / 2026-10-01 | Presentación de avance | `2026-09-28_entrega/` | histórico |
-| **2026-11-23 o 2026-11-26** (confirmar) | **Presentación final** (15 min, ambos integrantes, demo en vivo) | `2026-11-23_final/` | en preparación |
+| 2026-11-26 | Presentación final (15 min, demo en vivo) | `2026-11-26_final/` | presentada |
 
-Contenido esperado de `2026-11-23_final/`:
+Contenido esperado de `2026-11-26_final/`:
 
-- `final.pdf` y su fuente;
-- `demo_respaldo.mp4`: video de respaldo de la demo, de 2–3 min, listo a más
-  tardar el 19-nov. Si pesa más de unos 50 MB, subirlo a Drive o a un Release
-  y dejar aquí el enlace en un `README.md`;
-- `ensayos.md`: duración medida en los 2 ensayos cronometrados.
+- `index.html`: fuente, HTML autocontenido; figuras y tipografías en `assets/`;
+- `final.pdf`: exportación de respaldo de las láminas;
+- `graficos_deck.py` y `celda_colab_fotos.py`: regeneran los gráficos y las
+  figuras con imágenes de `assets/`;
+- `PENDIENTES.md`: estado y atajos de teclado.
+
+La demo se hizo en vivo, sin video de respaldo.
 
 El guion cronometrado (Tomás y Nelson), el checklist de láminas y las
 respuestas preparadas para las preguntas están en

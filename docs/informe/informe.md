@@ -4,6 +4,7 @@ subtitle: "Informe técnico final — Aprendizaje Automático II, PUCV 2026-2 (G
 author:
   - Tomás Ignacio Moraga
   - Nelson Mauricio Fuentes
+  - Fernando Guerrero
 date: "Noviembre de 2026"
 lang: es
 bibliography: refs.bib
@@ -89,7 +90,7 @@ si no hay etiqueta.
 | CS-Fog (propia, sobre Cityscapes [@cordts2016cityscapes]) | ASM con distancia estéreo | métrica | 15–1000 m continua | train/val/test por ciudad |
 | HazeRD [@zhang2017hazerd; @zhang2019hazerddata] | ASM con profundidad métrica | métrica | 5 niveles nominales; ≈ 38–766 m si ε~H~ = 0,02 | solo test externo |
 | O-HAZE [@ancuti2018ohaze] | **real** (máquina de niebla), pares | ninguna | — | externo: cualitativo + orden por pares |
-| Fotos propias (La Pólvora) | real / despejada | ninguna | — | externo cualitativo, demo |
+| Fotos propias (La Pólvora) | real / despejada | ninguna | — | previsto como externo cualitativo; no se alcanzó a reunir |
 
 : Fuentes de datos. Conteos por split, fuente y banda en `reports/tables/data_counts.md`: 36.542 imágenes en 5.292 grupos; el conjunto externo tiene 75 imágenes de HazeRD y 90 de O-HAZE.
 
@@ -282,13 +283,11 @@ versionaron el 25 y el 26-nov-2026 (commits `e5b8106`, notebooks 03–04, y
 
 : Test interno (4.670 imágenes, 545 grupos). Media ± d.e. entre 3 semillas e IC 95 % por bootstrap agrupado (B = 2.000); los baselines tienen una sola corrida. log10-MAE y Spearman globales. Fuente: `reports/tables/metrics_test.md` y `paired_test.md`.
 
-Figuras:
+![Visibilidad predicha frente a la real en el test interno, en escala log-log (media de 3 semillas por imagen). Las líneas punteadas marcan los cortes de banda de 50, 100 y 200 m. Fuente: `reports/figures/scatter_test.png`.](../../reports/figures/scatter_test.png){width=100%}
 
-- dispersión log-log de V̂ vs V (`reports/figures/scatter_test.png`);
-- error por banda (`error_by_band_test.png`);
-- matrices de confusión (`confusion_test.png`);
-- desempeño por fuente (`per_source_test.png`);
-- curvas de aprendizaje (`learning_curves.png`).
+El error por banda, las matrices de confusión, el desempeño por fuente y las
+curvas de aprendizaje están en `reports/figures/` (`error_by_band_test.png`,
+`confusion_test.png`, `per_source_test.png` y `learning_curves.png`).
 
 Ambas redes superan con holgura a todos los baselines: el mejor, el físico
 HGB, tiene un log10-MAE de 0,137, frente a 0,062 de ResNet-50 y 0,046 de
@@ -335,6 +334,8 @@ el falso-seguro sube a 0,054 y 0,056. El orden entre modelos se mantiene
 Galería con V real y V̂ en metros para ambos modelos: los 16 ejemplos fijos
 de `reports/figures/interpret_examples_neg.png`.
 
+![Visibilidad predicha frente a la real en HazeRD (externo métrico, 75 imágenes). Las dos redes subestiman la visibilidad en todos los niveles. Fuente: `reports/figures/scatter_ext.png`.](../../reports/figures/scatter_ext.png){width=100%}
+
 ## 4.5 Atajos e interpretabilidad
 
 | Prueba | ResNet-50 | DeiT-S | Lectura prevista |
@@ -374,6 +375,8 @@ contrastado, y un auto real es más chico y de menor contraste. Con la SSD de
 44 y 33 km/h, frente a 143, 93, 72 y 44 km/h si se usara la MOR. Se esperaba
 que $V_{det}$ quedara censurada por encima del rango de los bins (hasta
 150 m) con β = 0,005 y 0,01; ocurrió solo con β = 0,005 (> 145 m).
+
+![Recall de Faster R-CNN según la distancia al auto, por condición de niebla (izquierda), y recall relativo al caso sin niebla (derecha). Las líneas punteadas verticales marcan $V_{det}$, donde el recall relativo cae bajo 0,5. Bandas: IC 95 % por bootstrap de secuencias. Fuente: `reports/figures/cars_recall_vs_distance.png`.](../../reports/figures/cars_recall_vs_distance.png){width=100%}
 
 ## 4.7 Velocidad vs precisión
 
@@ -481,5 +484,5 @@ asistentes de IA, bajo instrucciones y revisión del equipo, conforme a las
 normas del curso y de la PUCV. El diseño experimental lo decidió el equipo: datos, etiqueta MOR, par
 de modelos, protocolo, hipótesis y reglas de decisión. Los experimentos los
 ejecutó el equipo en Google Colab, y **todas las cifras provienen de las
-tablas generadas por el código** en `reports/`. Ninguna fue escrita a mano. Ambos integrantes revisaron y pueden explicar cada
+tablas generadas por el código** en `reports/`. Ninguna fue escrita a mano. Los integrantes del equipo revisaron y pueden explicar cada
 componente. La responsabilidad por el contenido es del equipo.

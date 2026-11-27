@@ -1,17 +1,17 @@
 # Data card — Camanchaca-Predict
 
+Grupo 5: Tomás Moraga, Nelson Fuentes y Fernando Guerrero. Aprendizaje
+Automático II, PUCV 2026-2.
+
 Ficha de datos según *Datasheets for Datasets* (Gebru et al., 2021). Cubre
 qué datos se usan, de dónde vienen, con qué licencia, cuántos son, cómo se
 particionan, qué significa la etiqueta y qué sesgos tienen.
 
-> **Estado (3-nov-2026).** El código de preparación está listo y probado con
-> datos sintéticos. Las descargas reales se hacen en Colab, así que los
-> conteos de abajo son **esperados** según la documentación de cada dataset.
-> Los **conteos reales** los genera `camanchaca split` en
-> [`reports/tables/data_counts.md`](../reports/tables/data_counts.md) y en
-> [`data/splits/v1/SPLIT_INFO.json`](../data/splits/v1/), con el sha256 de
-> cada CSV. Si los números difieren, mandan los generados.
-> **Pendiente:** completar las fechas de acceso marcadas como `[COMPLETAR]`.
+> **Estado (26-nov-2026).** Los datos están descargados, preprocesados y
+> congelados en `data/splits/v1`; `SPLIT_INFO.json` guarda el sha256 de cada
+> CSV. Los conteos de este documento son los **reales**, generados por
+> `camanchaca split` ([`reports/tables/data_counts.md`](../reports/tables/data_counts.md)).
+> La tabla completa por conjunto, fuente y banda está en la sección 5.
 
 ## 1. Motivación y uso previsto
 
@@ -30,7 +30,7 @@ particionan, qué significa la etiqueta y qué sesgos tienen.
 | RESIDE-OTS (`reside_ots`) | sintética (ASM) sobre fotos reales de internet; profundidad **estimada** | V MOR **equivalente** | train / val / test (por escena) | investigación, no comercial; fotos con copyright de sus autores |
 | Foggy Cityscapes (`foggy_cs`) | sintética (ASM) sobre escenas urbanas reales; distancia **estéreo** | V MOR **métrica** (600/300/150 m) | train / val / test (por ciudad) | términos de Cityscapes: no comercial, **sin redistribución** |
 | CS-Fog (`cs_fog`, propia) | sintética (ASM) generada por nosotros sobre Cityscapes limpio; distancia **estéreo** | V MOR **métrica** continua (15–1000 m) | train / val / test (por ciudad) | derivado de Cityscapes: mismos términos (no se redistribuyen las imágenes) |
-| HazeRD (`hazerd`) | sintética sobre 14–15 escenas reales con profundidad **métrica** | V MOR **métrica** (convención por confirmar) | **solo test externo** (`ext`) | IEEE DataPort "open access" (licencia exacta no verificada) |
+| HazeRD (`hazerd`) | sintética sobre 15 escenas reales con profundidad **métrica** | V MOR **métrica** (convención por confirmar) | **solo test externo** (`ext`) | IEEE DataPort "open access" (licencia exacta no verificada) |
 | O-HAZE (`ohaze`) | **real** (máquina de niebla), pares con/sin niebla | **ninguna** | **solo externo**: cualitativo + orden por pares | sin licencia explícita encontrada: uso de investigación, sin redistribuir |
 | Fotos propias La Pólvora (`folder`) | **real** (camanchaca) o despejada | ninguna (opcional: V estimada con referencias) | **solo externo / demo** | del equipo (se pueden publicar si no muestran personas o patentes) |
 | Autos (Cityscapes val) | limpio, Foggy Cityscapes (3 β) y CS-Fog (V = 50 y 100 m) | distancia por auto desde estéreo | análisis complementario (no entrena modelos) | términos de Cityscapes |
@@ -53,19 +53,18 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
   {0,04 … 0,2} × 5 A {0,8 … 1,0} por escena. Los **reempaques** (RESIDE-6K,
   DehazeFormer, gUNet) renombran los archivos, pierden β y **no sirven**.
   `camanchaca prep reside --check-only` mide el % de nombres válidos y aborta
-  bajo 90 %. Los nombres secuenciales de la primera versión del proyecto
-  sugieren que se había usado un reempaque; esto se confirma al descargar de
-  nuevo.
-- **Fecha de acceso / espejo usado:** `[COMPLETAR]`.
+  bajo 90 %. La versión usada en la entrega conserva los nombres oficiales
+  `{id}_{A}_{beta}` (por ejemplo, `4388_0.8_0.04.jpg`).
+- **Fecha de acceso / espejo usado:** noviembre de 2026, espejo de Kaggle
+  `brunobelloni/outdoor-training-set-ots-reside`. Los paquetes preprocesados
+  quedaron en Drive el 22-nov-2026.
 - **Licencia.** El sitio de RESIDE indica uso de investigación / no comercial
-  (no se pudo verificar desde el sandbox). Las fotos limpias vienen de
+  (no pudimos confirmarlo en una fuente primaria). Las fotos limpias vienen de
   internet y su copyright es de sus autores. La etiqueta "Apache-2.0" de Kaggle
   la pone quien sube el archivo y **no es autoritativa**.
-- **Conteos esperados.** La versión RESIDE-β actual tiene 2.061 escenas y
-  72.135 imágenes con niebla. Con **una A por (escena, β)**, elegida con
-  semilla, quedan **14.427** imágenes. El split 70/15/15 por escena da
-  ≈ 10,1k / 2,2k / 2,2k. Versiones antiguas tienen 8.970 u 8.477 escenas; el
-  número de ids únicos identifica cuál se descargó.
+- **Conteos.** 2.061 escenas con 7 β cada una. Con **una A por (escena, β)**,
+  elegida con semilla, quedan **14.427** imágenes: train 10.087 (1.441
+  escenas), val 2.170 (310) y test 2.170 (310).
 - **Etiqueta.** `β` del nombre de archivo. V MOR de 15,0 a 74,9 m, en las
   bandas `critico` y `alto_riesgo`. `label_quality = equivalente`, porque la
   profundidad usada al sintetizar es monocular y relativa.
@@ -74,7 +73,9 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
 - **Sesgos conocidos.** Fotos diurnas de internet con muchas escenas urbanas
   y de paisaje. Niebla homogénea con A ∈ [0,8; 1,0]. β, A y contenido de la
   escena están correlacionados. Solo cubre V < 75 m. La niebla de RESIDE se
-  ha descrito como poco fiel a la profundidad real.
+  ha descrito como poco fiel a la profundidad real. En la práctica es tenue:
+  aumenta con β, pero incluso con β = 0,2 (15 m equivalentes) las imágenes
+  se ven casi despejadas a simple vista.
 
 ### 3.2 Foggy Cityscapes (oficial)
 
@@ -82,22 +83,23 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
   with Synthetic Data*, IJCV 126(9), 2018. Página:
   <https://people.ee.ethz.ch/~csakarid/SFSU_synthetic/>. Imágenes **solo** en
   <https://www.cityscapes-dataset.com/downloads/>, con registro académico.
-  Paquete `leftImg8bit_trainvaltest_foggy.zip` (~30 GB según la comunidad;
-  verificar con `csDownload -l`).
-- **Fecha de acceso:** `[COMPLETAR]`.
+  Paquete `leftImg8bit_trainvaltest_foggy.zip` (~30 GB).
+- **Fecha de acceso:** noviembre de 2026, paquete oficial desde
+  cityscapes-dataset.com. Los paquetes preprocesados quedaron en Drive el
+  22-nov-2026.
 - **Licencia.** Términos de Cityscapes: uso no comercial, cita obligatoria,
   **prohibido redistribuir** las imágenes o versiones modificadas. Se permiten
   derivados abstractos (modelos, CSV de etiquetas). La lista "refined" (550
   frames) tiene una licencia que prohíbe redistribuirla: se descarga en tiempo
   de ejecución y no se versiona.
-- **Conteos esperados.** 5.000 frames × 3 β = 15.000 imágenes (oficial: 2.975
+- **Conteos.** 5.000 frames × 3 β = **15.000** imágenes (oficial: 2.975
   train / 500 val / 1.525 test frames). En nuestro split:
   - **test** = 500 frames del val oficial (frankfurt, lindau, munster) × 3 =
     1.500;
-  - **val** = hanover, jena y tubingen. El conteo de ~459 frames es de memoria
-    y debe verificarse.
-  - **train** = el resto, que incluye las ciudades del test oficial (β
-    conocido; nunca se mezclan con las ciudades de evaluación).
+  - **val** = hanover, jena y tubingen: 459 frames × 3 = 1.377;
+  - **train** = el resto, 4.041 frames × 3 = 12.123, que incluye las ciudades
+    del test oficial (β conocido; nunca se mezclan con las ciudades de
+    evaluación).
 - **No usados.** Las ~20.000 imágenes extra (`trainextra`, solo β = 0,01)
   aportarían un único nivel (300 m) y cuestan disco. La variante DBF agrega
   otros ~20 GB sin nuevos niveles.
@@ -119,9 +121,10 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
   aparecen en el **mismo** dominio visual, en train, val y test.
 - **Licencia.** Son imágenes modificadas de Cityscapes, con los mismos
   términos: **no se redistribuyen**. Solo se versiona el manifiesto CSV.
-- **Conteos esperados.** Splits oficiales con gtFine (train + val = 3.475
-  frames) × K = 2 visibilidades = 6.950 imágenes. Test = 500 × 2 = 1.000.
-  Val ≈ 459 × 2. Train = el resto.
+- **Conteos.** Splits oficiales con gtFine (train + val = 3.475 frames) × K = 2
+  visibilidades = **6.950** imágenes: train 5.032, val 918 y test 1.000. Por
+  banda: 2.001 críticas, 1.173 de alto riesgo, 1.173 de precaución y 2.603
+  aceptables.
 - **Etiqueta.** V MOR ~ log-uniforme en [15, 1000] m. La fracción esperada por
   banda es 28,7 / 16,5 / 16,5 / 38,3 %. A ~ U[0,75; 0,95].
   `label_quality = metrica`. El render se detalla en
@@ -139,11 +142,11 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
   <https://labsites.rochester.edu/gsharma/research/computer-vision/hazerd/>.
   IEEE DataPort, DOI 10.21227/h6q8-y165, que requiere cuenta gratuita. Existe
   también un registro antiguo de 10 escenas.
-- **Fecha de acceso / versión:** `[COMPLETAR]`.
+- **Fecha de acceso / versión:** noviembre de 2026, registro de IEEE DataPort
+  (paquete de 2019, sin las imágenes con niebla).
 - **Licencia.** "Open access" en IEEE DataPort. La licencia exacta no se
   verificó (los registros abiertos de DataPort suelen ser CC BY 4.0).
-- **Conteos esperados.** 14 escenas según la página y 15 según IEEE/DataPort,
-  × 5 niveles = 70–75 imágenes. Todo es test.
+- **Conteos.** 15 escenas × 5 niveles = **75** imágenes, todas en `ext`.
 - **Etiqueta.** Niveles nominales 50/100/200/500/1000 m sobre profundidad
   métrica. El paquete 2019 no trae las imágenes con niebla: `prep hazerd` las
   renderiza en Python con A = 0,76, composición en RGB lineal y profundidad
@@ -153,9 +156,10 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
   la V MOR es 0,766 × V_nom: 50/100/200/500/1000 m nominales → ≈ 38/77/153/
   383/766 m MOR (bandas `critico`, `alto_riesgo`, `precaucion`, `aceptable`,
   `aceptable`).
-  `label_quality = metrica`.
+  `label_quality = metrica`. En la evaluación se usó ε_H = 0,02, que da 15
+  imágenes críticas, 15 de alto riesgo, 15 de precaución y 30 aceptables.
 - **Split.** `ext` (solo evaluación final). El bootstrap agrupa por escena,
-  así que los IC son anchos con 14–15 escenas.
+  así que los IC son anchos con 15 escenas.
 - **Sesgos conocidos.** Escenas mayoritariamente de arquitectura, no de
   carreteras. Alta resolución. Luz atmosférica fija y render distinto al del
   entrenamiento, lo que introduce un cambio de dominio de render.
@@ -165,10 +169,11 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
 - **Origen.** Ancuti et al., *O-HAZE: a dehazing benchmark with real hazy and
   haze-free outdoor images*, CVPRW (NTIRE) 2018. Página:
   <https://data.vision.ee.ethz.ch/cvl/ntire18/o-haze/>.
-- **Fecha de acceso:** `[COMPLETAR]`.
+- **Fecha de acceso:** noviembre de 2026, sitio oficial del NTIRE 2018.
 - **Licencia.** No se encontró una licencia explícita. Se trata como uso de
   investigación y no se redistribuye.
-- **Conteos esperados.** 45 pares (`NN_outdoor_hazy` / `NN_outdoor_GT`).
+- **Conteos.** 45 pares (`NN_outdoor_hazy` / `NN_outdoor_GT`) = **90**
+  imágenes, en `ext`.
 - **Etiqueta.** Ninguna (`label_quality = ninguna`). La GT lleva
   `is_clear = True`.
 - **Uso.** Inspección cualitativa y chequeo de orden por pares
@@ -184,10 +189,12 @@ Detalle en [`docs/labeling_criteria.md`](labeling_criteria.md).
 - **Origen.** Fotos tomadas por el equipo con y sin camanchaca, con fecha y
   hora en el nombre. Se preparan con `camanchaca prep folder --raw <carpeta>
   --name polvora`.
-- **Conteo:** `[COMPLETAR]` (objetivo: 20–50 fotos).
+- **Conteo:** 0 en la entrega final. No se alcanzaron a incorporar fotos
+  propias al conjunto `ext`; queda como trabajo futuro (objetivo: 20–50
+  fotos).
 - **Etiqueta.** Ninguna, salvo un CSV opcional (`--labels`) con V estimada a
   partir de postes o señales a distancia conocida.
-- **Uso.** Brecha de dominio cualitativa y ejemplos de la demo
+- **Uso previsto.** Brecha de dominio cualitativa y ejemplos de la demo
   (`app/examples/`). Se quitan los metadatos GPS y no se incluyen personas ni
   patentes identificables.
 
@@ -235,6 +242,28 @@ con visibilidad medida.
 - `SPLIT_INFO.json` guarda parámetros, conteos y sha256 de cada CSV y de los
   manifiestos de entrada.
 
+### Conteos finales
+
+Imágenes por conjunto, fuente y banda (V MOR, ε = 5 %), según
+`reports/tables/data_counts.md`. "Grupos" = escenas o secuencias.
+
+| Conjunto | Fuente | Crítico (<50 m) | Alto riesgo (50–100 m) | Precaución (100–200 m) | Aceptable (≥200 m) | Sin etiqueta | Imágenes | Grupos |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| train | CS-Fog | 1.478 | 852 | 845 | 1.857 | 0 | 5.032 | 1.621 |
+| train | Foggy Cityscapes | 0 | 0 | 4.041 | 8.082 | 0 | 12.123 | 2.672 |
+| train | RESIDE-OTS | 8.646 | 1.441 | 0 | 0 | 0 | 10.087 | 1.441 |
+| val | CS-Fog | 256 | 166 | 151 | 345 | 0 | 918 | 264 |
+| val | Foggy Cityscapes | 0 | 0 | 459 | 918 | 0 | 1.377 | 264 |
+| val | RESIDE-OTS | 1.860 | 310 | 0 | 0 | 0 | 2.170 | 310 |
+| test | CS-Fog | 267 | 155 | 177 | 401 | 0 | 1.000 | 235 |
+| test | Foggy Cityscapes | 0 | 0 | 500 | 1.000 | 0 | 1.500 | 235 |
+| test | RESIDE-OTS | 1.860 | 310 | 0 | 0 | 0 | 2.170 | 310 |
+| ext | HazeRD | 15 | 15 | 15 | 30 | 0 | 75 | 15 |
+| ext | O-HAZE | 0 | 0 | 0 | 0 | 90 | 90 | 45 |
+| **Total** | | | | | | | **36.542** | **5.292** |
+
+Por conjunto: train 27.242, val 4.465, test 4.670 y ext 165 imágenes.
+
 ## 6. Distribución y mantenimiento
 
 - **Se versiona:** `data/manifests/*.csv`, `data/splits/v1/*.csv`,
@@ -257,7 +286,8 @@ con visibilidad medida.
    advectiva, heterogénea y marina.
 2. **No hay datos chilenos ni de carreteras costeras** con etiqueta.
 3. Todo es **diurno**. La noche, la lluvia y el deslumbramiento quedan fuera
-   de distribución (la demo advierte posible noche).
+   de distribución. La demo intenta avisar cuando la foto parece nocturna,
+   pero no siempre lo detecta.
 4. **Confusión dataset ↔ banda** en las fuentes oficiales. Se mitiga con
    CS-Fog, con el baseline por fuente y con sondas.
 5. **Etiquetas cerca de los bordes de banda**: RESIDE β = 0,06 → 49,9 m;

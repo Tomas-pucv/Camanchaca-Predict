@@ -1,0 +1,7 @@
+relpath,tipo,source,band,v_true_m,v_resnet,v_deit
+images/cs_fog/munster/munster_000015_000019_k1.jpg,Acierto,cs_fog,critico,24.9,24.8,24.9
+images/foggy_cs/val/munster/munster_000031_000019_beta_0.02.jpg,Acierto,foggy_cs,precaucion,149.8,149.8,149.8
+images/reside_ots/5097_0.9_0.04.jpg,Acierto,reside_ots,alto_riesgo,74.9,75.3,75.0
+images/reside_ots/3140_0.8_0.06.jpg,Falso seguro,reside_ots,critico,49.9,100.2,61.4
+images/foggy_cs/val/frankfurt/frankfurt_000001_073243_beta_0.02.jpg,Peor error de ResNet-50,foggy_cs,precaucion,149.8,339.5,286.2
+images/cs_fog/frankfurt/frankfurt_000001_007407_k0.jpg,Peor error de DeiT-S,cs_fog,aceptable,228.1,381.2,383.2
